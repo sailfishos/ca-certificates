@@ -54,6 +54,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{pkidir}/tls
 %dir %{pkidir}/tls/certs
 %config(noreplace) %{pkidir}/tls/certs/ca-bundle.crt
+%{pkidir}/tls/cert.pem
 
 %changelog
 * Mon Jun  2 2008 Joe Orton <jorton@redhat.com> 2008-5
