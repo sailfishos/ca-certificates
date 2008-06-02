@@ -7,7 +7,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2008
-Release: 4
+Release: 5
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -38,6 +38,7 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT{%{pkidir}/tls/certs,%{pkidir}/java}
 
 install -p -m 644 %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
+ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
 
 # Install Java cacerts file.
 mkdir -p -m 700 $RPM_BUILD_ROOT%{pkidir}/java
@@ -55,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{pkidir}/tls/certs/ca-bundle.crt
 
 %changelog
+* Mon Jun  2 2008 Joe Orton <jorton@redhat.com> 2008-5
+- include /etc/pki/tls/cert.pem symlink to ca-bundle.crt
+
 * Tue May 27 2008 Joe Orton <jorton@redhat.com> 2008-4
 - use package name for temp dir, recreate it in prep
 
