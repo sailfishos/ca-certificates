@@ -7,7 +7,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2008
-Release: 6
+Release: 7
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 %{pkidir}/tls/cert.pem
 
 %changelog
+* Tue Oct 14 2008 Joe Orton <jorton@redhat.com> 2008-7
+- update to certdata.txt r1.49
+
 * Wed Jun 25 2008 Thomas Fitzsimmons <fitzsim@redhat.com> - 2008-6
 - Change generate-cacerts.pl to produce pretty aliases.
 
