@@ -7,7 +7,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2008
-Release: 7
+Release: 8
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -57,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 %{pkidir}/tls/cert.pem
 
 %changelog
+* Mon Feb 23 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2008-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
 * Tue Oct 14 2008 Joe Orton <jorton@redhat.com> 2008-7
 - update to certdata.txt r1.49
 
