@@ -11,6 +11,7 @@ open(IN, "cvs -d $cvsroot co -p $certdata|")
     || die "could not check out certdata.txt";
 
 my $incert = 0;
+my $skipcert = 0;
 
 print<<EOH;
 # This is a bundle of X.509 certificates of public Certificate
@@ -23,13 +24,18 @@ EOH
 while (<IN>) {
     if (/^CKA_VALUE MULTILINE_OCTAL/) {
         $incert = 1;
-        open(OUT, "|openssl x509 -text -inform DER -fingerprint")
-            || die "could not pipe to openssl x509";
+        if (!$skipcert) {
+            open(OUT, "|openssl x509 -text -inform DER -fingerprint")
+                || die "could not pipe to openssl x509";
+        }
     } elsif (/^END/ && $incert) {
-        close(OUT);
+        if (!$skipcert) {
+            close(OUT);
+            print "\n\n";
+        }
         $incert = 0;
-        print "\n\n";
-    } elsif ($incert) {
+        $skipcert = 0;
+    } elsif ($incert && !$skipcert) {
         my @bs = split(/\\/);
         foreach my $b (@bs) {
             chomp $b;
@@ -37,5 +43,8 @@ while (<IN>) {
         }
     } elsif (/^CVS_ID.*Revision: ([^ ]*).*/) {
         print "# Generated from certdata.txt RCS revision $1\n#\n";
+    } elsif (/^CKA_LABEL.*ECC.*/) {
+        # Ugly hack to avoid picking up ECC certs.
+        $skipcert = 1;
     }
 }
