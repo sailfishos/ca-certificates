@@ -6,16 +6,17 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2009
-Release: 2%{?dist}
+Version: 2010
+Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
-Source0: ca-bundle.crt
-Source1: generate-cacerts.pl
-Source2: mkcabundle.pl
+Source0: certdata.txt
+Source1: blacklist.txt
+Source2: generate-cacerts.pl
+Source3: certdata2pem.py
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: perl, java-openjdk
+BuildRequires: perl, java-openjdk, python
 BuildArch: noarch
 
 %description
@@ -24,11 +25,30 @@ Mozilla Foundation for use with the Internet PKI.
 
 %prep
 rm -rf %{name}
-mkdir %{name}
+mkdir %{name} %{name}/certs
 
 %build
+pushd %{name}/certs
+ cp %{SOURCE0} %{SOURCE1} .
+ python %{SOURCE3} 
+popd
 pushd %{name}
- %{__perl} %{SOURCE1} %{_bindir}/keytool %{SOURCE0} 
+ (
+   cat <<EOF
+# This is a bundle of X.509 certificates of public Certificate
+# Authorities.  It was generated from the Mozilla root CA list.
+#
+# Source: mozilla/security/nss/lib/ckfw/builtins/certdata.txt
+#
+# Generated from:
+EOF
+   ident -q %{SOURCE0} | sed '1d;s/^/#/';
+   echo '#';
+   for f in certs/*.crt; do 
+      openssl x509 -text -in "$f"
+   done;
+ ) > ca-bundle.crt
+ %{__perl} %{SOURCE2} %{_bindir}/keytool ca-bundle.crt
  touch -r %{SOURCE0} cacerts
 popd
 
@@ -37,8 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT{%{pkidir}/tls/certs,%{pkidir}/java}
 
-install -p -m 644 %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
+install -p -m 644 ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
+touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 
 # Install Java cacerts file.
 mkdir -p -m 700 $RPM_BUILD_ROOT%{pkidir}/java
@@ -57,6 +78,9 @@ rm -rf $RPM_BUILD_ROOT
 %{pkidir}/tls/cert.pem
 
 %changelog
+* Mon Jan 11 2010 Joe Orton <jorton@redhat.com> - 2010-1
+- adopt Python certdata.txt parsing script from Debian
+
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2009-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
