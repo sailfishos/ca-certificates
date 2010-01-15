@@ -50,7 +50,8 @@ EOF
  ) > ca-bundle.crt
 popd
 pushd %{name}/java
- %{__perl} %{SOURCE2} %{_bindir}/keytool ../certs/ca-bundle.crt
+ test -s ../ca-bundle.crt || exit 1
+ %{__perl} %{SOURCE2} %{_bindir}/keytool ../ca-bundle.crt
  touch -r %{SOURCE0} cacerts
 popd
 
@@ -59,7 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT{%{pkidir}/tls/certs,%{pkidir}/java}
 
-install -p -m 644 ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
+install -p -m 644 %{name}/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 
