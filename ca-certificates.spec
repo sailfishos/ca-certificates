@@ -7,7 +7,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2010
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -16,7 +16,7 @@ Source1: blacklist.txt
 Source2: generate-cacerts.pl
 Source3: certdata2pem.py
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: perl, java-openjdk, python
+BuildRequires: perl, java-openjdk, python, rcs
 BuildArch: noarch
 
 %description
@@ -25,7 +25,7 @@ Mozilla Foundation for use with the Internet PKI.
 
 %prep
 rm -rf %{name}
-mkdir %{name} %{name}/certs
+mkdir %{name} %{name}/certs %{name}/java
 
 %build
 pushd %{name}/certs
@@ -44,11 +44,13 @@ pushd %{name}
 EOF
    ident -q %{SOURCE0} | sed '1d;s/^/#/';
    echo '#';
-   for f in certs/*.crt; do 
+   set +x; for f in certs/*.crt; do 
       openssl x509 -text -in "$f"
-   done;
+   done; set -x;
  ) > ca-bundle.crt
- %{__perl} %{SOURCE2} %{_bindir}/keytool ca-bundle.crt
+popd
+pushd %{name}/java
+ %{__perl} %{SOURCE2} %{_bindir}/keytool ../certs/ca-bundle.crt
  touch -r %{SOURCE0} cacerts
 popd
 
@@ -63,7 +65,7 @@ touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 
 # Install Java cacerts file.
 mkdir -p -m 700 $RPM_BUILD_ROOT%{pkidir}/java
-install -p -m 644 %{name}/cacerts $RPM_BUILD_ROOT%{pkidir}/java/
+install -p -m 644 %{name}/java/cacerts $RPM_BUILD_ROOT%{pkidir}/java/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -78,6 +80,10 @@ rm -rf $RPM_BUILD_ROOT
 %{pkidir}/tls/cert.pem
 
 %changelog
+* Fri Jan 15 2010 Joe Orton <jorton@redhat.com> - 2010-2
+- fix Java cacert database generation: use Subject rather than Issuer
+  for alias name; add diagnostics; fix some alias names.
+
 * Mon Jan 11 2010 Joe Orton <jorton@redhat.com> - 2010-1
 - adopt Python certdata.txt parsing script from Debian
 
