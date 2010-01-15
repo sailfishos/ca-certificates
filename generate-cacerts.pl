@@ -297,10 +297,8 @@ foreach $cert (@certs)
         if ($write_current_cert == 1)
         {
             $pem_file_count++;
-            print "writing $cert_alias.pem\n";
             sysopen(PEM, "$cert_alias.pem", O_WRONLY|O_CREAT|O_EXCL)
                 || die("could not write file");
-            print "opened $cert_alias";
             print PEM $cert;
             print "written $cert_alias.pem\n";
         }
