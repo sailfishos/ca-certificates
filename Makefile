@@ -1,5 +1,5 @@
 # Makefile for source rpm: ca-certificates
-# $Id: Makefile,v 1.2 2009/11/25 22:47:28 notting Exp $
+# $Id: Makefile,v 1.3 2010/01/15 20:22:01 jorton Exp $
 NAME := ca-certificates
 SPECFILE = $(firstword $(wildcard *.spec))
 
@@ -7,8 +7,7 @@ define find-makefile-common
 for d in common ../common ../../common ; do if [ -f $$d/Makefile.common ] ; then if [ -f $$d/CVS/Root -a -w $$d/Makefile.common ] ; then cd $$d ; cvs -Q update ; fi ; echo "$$d/Makefile.common" ; break ; fi ; done
 endef
 
-MAKEFILE_COMMON := ../common/Makefile.common
-#MAKEFILE_COMMON := $(shell $(find-makefile-common))
+MAKEFILE_COMMON := $(shell $(find-makefile-common))
 
 ifeq ($(MAKEFILE_COMMON),)
 # attept a checkout
