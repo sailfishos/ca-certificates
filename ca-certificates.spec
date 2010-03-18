@@ -7,7 +7,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2010
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -44,10 +44,34 @@ pushd %{name}
 EOF
    ident -q %{SOURCE0} | sed '1d;s/^/#/';
    echo '#';
-   set +x; for f in certs/*.crt; do 
-      openssl x509 -text -in "$f"
-   done; set -x;
  ) > ca-bundle.crt
+ (
+   cat <<EOF
+# This is a bundle of X.509 certificates of public Certificate
+# Authorities.  It was generated from the Mozilla root CA list.
+# These certificates are in the OpenSSL "TRUSTED CERTIFICATE"
+# format and have trust bits set accordingly.
+#
+# Source: mozilla/security/nss/lib/ckfw/builtins/certdata.txt
+#
+# Generated from:
+EOF
+   ident -q %{SOURCE0} | sed '1d;s/^/#/';
+   echo '#';
+ ) > ca-bundle.trust.crt
+ for f in certs/*.crt; do 
+   tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
+   case $tbits in
+   *serverAuth*) openssl x509 -text -in "$f" >> ca-bundle.crt ;;
+   esac
+   if [ -n "$tbits" ]; then
+      targs=""
+      for t in $tbits; do
+         targs="${targs} -addtrust $t"
+      done
+      openssl x509 -text -in "$f" -trustout $targs >> ca-bundle.trust.crt
+   fi
+ done
 popd
 pushd %{name}/java
  test -s ../ca-bundle.crt || exit 1
@@ -61,8 +85,10 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT{%{pkidir}/tls/certs,%{pkidir}/java}
 
 install -p -m 644 %{name}/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
+install -p -m 644 %{name}/ca-bundle.trust.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
+touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
 
 # Install Java cacerts file.
 mkdir -p -m 700 $RPM_BUILD_ROOT%{pkidir}/java
@@ -77,10 +103,17 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{pkidir}/java/cacerts
 %dir %{pkidir}/tls
 %dir %{pkidir}/tls/certs
-%config(noreplace) %{pkidir}/tls/certs/ca-bundle.crt
+%config(noreplace) %{pkidir}/tls/certs/ca-bundle.*crt
 %{pkidir}/tls/cert.pem
 
 %changelog
+* Thu Mar 18 2010 Joe Orton <jorton@redhat.com> - 2010-3
+- update to certdata.txt r1.58
+- add /etc/pki/tls/certs/ca-bundle.trust.crt using 'TRUSTED CERTICATE' format
+- exclude ECC certs from the Java cacerts database
+- catch keytool failures
+- fail parsing certdata.txt on finding untrusted but not blacklisted cert
+
 * Fri Jan 15 2010 Joe Orton <jorton@redhat.com> - 2010-2
 - fix Java cacert database generation: use Subject rather than Issuer
   for alias name; add diagnostics; fix some alias names.
