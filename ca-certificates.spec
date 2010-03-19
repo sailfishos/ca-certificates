@@ -7,7 +7,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2010
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -85,7 +85,7 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT{%{pkidir}/tls/certs,%{pkidir}/java}
 
 install -p -m 644 %{name}/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
-install -p -m 644 %{name}/ca-bundle.trust.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
+install -p -m 644 %{name}/ca-bundle.trust.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
 ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{pkidir}/tls/cert.pem
 
 %changelog
+* Fri Mar 19 2010 Joe Orton <jorton@redhat.com> - 2010-4
+- fix ca-bundle.crt (#575111)
+
 * Thu Mar 18 2010 Joe Orton <jorton@redhat.com> - 2010-3
 - update to certdata.txt r1.58
 - add /etc/pki/tls/certs/ca-bundle.trust.crt using 'TRUSTED CERTICATE' format

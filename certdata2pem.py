@@ -160,7 +160,7 @@ for obj in objects:
                 trustbits.append(t)
                 if t in openssl_trust:
                     openssl_trustflags.append(openssl_trust[t])
-        f.write("# nss-trust=" + ",".join(trustbits) + "\n")
+        f.write("# trust=" + " ".join(trustbits) + "\n")
         if openssl_trustflags:
             f.write("# openssl-trust=" + " ".join(openssl_trustflags) + "\n")
         f.write("-----BEGIN CERTIFICATE-----\n")
