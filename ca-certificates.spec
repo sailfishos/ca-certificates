@@ -12,7 +12,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2010.63
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -112,6 +112,9 @@ rm -rf $RPM_BUILD_ROOT
 %{pkidir}/tls/cert.pem
 
 %changelog
+* Wed Apr  7 2010 Joe Orton <jorton@redhat.com> - 2010.63-2
+- rebuild
+
 * Wed Apr  7 2010 Joe Orton <jorton@redhat.com> - 2010.63-1
 - update to certdata.txt r1.63
 - use upstream RCS version in Version
