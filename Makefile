@@ -1,5 +1,5 @@
 # Makefile for source rpm: ca-certificates
-# $Id: Makefile,v 1.3 2010/01/15 20:22:01 jorton Exp $
+# $Id: Makefile,v 1.4 2010/01/18 09:23:31 jorton Exp $
 NAME := ca-certificates
 SPECFILE = $(firstword $(wildcard *.spec))
 
@@ -19,3 +19,8 @@ MAKEFILE_COMMON := $(shell $(checkout-makefile-common))
 endif
 
 include $(MAKEFILE_COMMON)
+
+regenerate:
+	cvs -d :pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot   \
+	   co -p mozilla/security/nss/lib/ckfw/builtins/certdata.txt \
+	   > certdata.txt
