@@ -12,7 +12,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2010.63
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -99,6 +99,10 @@ touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
 mkdir -p -m 700 $RPM_BUILD_ROOT%{pkidir}/java
 install -p -m 644 %{name}/java/cacerts $RPM_BUILD_ROOT%{pkidir}/java/
 
+# /etc/ssl/certs symlink for 3rd-party tools
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
+ln -s ../pki/tls/certs $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -110,8 +114,13 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{pkidir}/tls/certs
 %config(noreplace) %{pkidir}/tls/certs/ca-bundle.*crt
 %{pkidir}/tls/cert.pem
+%dir %{_sysconfdir}/ssl
+%{_sysconfdir}/ssl/certs
 
 %changelog
+* Wed Apr  7 2010 Joe Orton <jorton@redhat.com> - 2010.63-3
+- package /etc/ssl/certs symlink for third-party apps (#572725)
+
 * Wed Apr  7 2010 Joe Orton <jorton@redhat.com> - 2010.63-2
 - rebuild
 
