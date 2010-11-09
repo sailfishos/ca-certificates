@@ -11,7 +11,7 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2010.63
+Version: 2010.65
 Release: 3%{?dist}
 License: Public Domain
 Group: System Environment/Base
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Tue Nov  9 2010 Joe Orton <jorton@redhat.com> - 2010.65-3
+- update to r1.65
+
 * Wed Apr  7 2010 Joe Orton <jorton@redhat.com> - 2010.63-3
 - package /etc/ssl/certs symlink for third-party apps (#572725)
 
