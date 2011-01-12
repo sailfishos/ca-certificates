@@ -11,8 +11,8 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2010.65
-Release: 3%{?dist}
+Version: 2011.70
+Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Wed Jan 12 2011 Joe Orton <jorton@redhat.com> - 2011.70-1
+- update to r1.70
+
 * Tue Nov  9 2010 Joe Orton <jorton@redhat.com> - 2010.65-3
 - update to r1.65
 
