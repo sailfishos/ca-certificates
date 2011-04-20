@@ -121,6 +121,9 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Apr 20 2011 Joe Orton <jorton@redhat.com> - 2011.74-1
 - update to r1.74
 
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2011.70-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Wed Jan 12 2011 Joe Orton <jorton@redhat.com> - 2011.70-1
 - update to r1.70
 
