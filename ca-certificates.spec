@@ -11,7 +11,7 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2011.75
+Version: 2011.78
 Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Thu Sep  1 2011 Joe Orton <jorton@redhat.com> - 2011.78-1
+- update to r1.78, removing trust from DigiNotar root (#734679)
+
 * Wed Aug  3 2011 Joe Orton <jorton@redhat.com> - 2011.75-1
 - update to r1.75
 

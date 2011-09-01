@@ -102,7 +102,9 @@ for obj in objects:
         trust[obj['CKA_LABEL']] = True
     elif obj['CKA_TRUST_EMAIL_PROTECTION'] == 'CKT_NSS_TRUSTED_DELEGATOR':
         trust[obj['CKA_LABEL']] = True
-    elif obj['CKA_TRUST_SERVER_AUTH'] == 'CKT_NETSCAPE_UNTRUSTED':
+    elif obj['CKA_TRUST_CODE_SIGNING'] == 'CKT_NSS_TRUSTED_DELEGATOR':
+        trust[obj['CKA_LABEL']] = True
+    elif obj['CKA_TRUST_SERVER_AUTH'] == 'CKT_NSS_UNTRUSTED':
         print '!'*74
         print "UNTRUSTED BUT NOT BLACKLISTED CERTIFICATE FOUND: %s" % obj['CKA_LABEL']
         print '!'*74
@@ -151,8 +153,10 @@ openssl_trust = {
 
 for obj in objects:
     if obj['CKA_CLASS'] == 'CKO_CERTIFICATE':
-        #if not obj['CKA_LABEL'] in trust or not trust[obj['CKA_LABEL']]:
-        #    continue
+        print "producing cert file for " + obj['CKA_LABEL']
+        if not obj['CKA_LABEL'] in trust or not trust[obj['CKA_LABEL']]:
+            print " -> untrusted, ignoring"
+            continue
         fname = label_to_filename(obj['CKA_LABEL'][1:-1])
         f = open(fname, 'w')
         trustbits = []
@@ -169,4 +173,7 @@ for obj in objects:
         f.write("-----BEGIN CERTIFICATE-----\n")
         f.write("\n".join(textwrap.wrap(base64.b64encode(obj['CKA_VALUE']), 64)))
         f.write("\n-----END CERTIFICATE-----\n")
+        print " -> written as '%s', trust = %s, openssl-trust = %s" % (fname, trustbits, openssl_trustflags)
+
+
 
