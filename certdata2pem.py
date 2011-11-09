@@ -117,13 +117,16 @@ for obj in objects:
     trustmap[label] = obj
     print " added cert", label
 
-def label_to_filename(label):
+def obj_to_filename(obj):
+    label = obj['CKA_LABEL'][1:-1]
     label = label.replace('/', '_')\
         .replace(' ', '_')\
         .replace('(', '=')\
         .replace(')', '=')\
-        .replace(',', '_') + '.crt'
-    return re.sub(r'\\x[0-9a-fA-F]{2}', lambda m:chr(int(m.group(0)[2:], 16)), label)
+        .replace(',', '_')
+    label = re.sub(r'\\x[0-9a-fA-F]{2}', lambda m:chr(int(m.group(0)[2:], 16)), label)
+    serial = ".".join(map(lambda x:str(ord(x)), obj['CKA_SERIAL_NUMBER']))
+    return label + ":" + serial + ".crt"
 
 trust_types = {
   "CKA_TRUST_DIGITAL_SIGNATURE": "digital-signature",
@@ -157,7 +160,7 @@ for obj in objects:
         if not obj['CKA_LABEL'] in trust or not trust[obj['CKA_LABEL']]:
             print " -> untrusted, ignoring"
             continue
-        fname = label_to_filename(obj['CKA_LABEL'][1:-1])
+        fname = obj_to_filename(obj)
         f = open(fname, 'w')
         trustbits = []
         openssl_trustflags = []
