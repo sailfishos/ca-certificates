@@ -12,7 +12,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2011.80
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Thu Jan 12 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2011.80-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Wed Nov  9 2011 Joe Orton <jorton@zebedee.manyfish.co.uk> - 2011.80-1
 - update to r1.80
 - fix handling of certs with dublicate Subject names (#733032)
