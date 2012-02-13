@@ -11,7 +11,7 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2011.80
+Version: 2012.81
 Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base
@@ -118,7 +118,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
-* Wed Nov  9 2011 Joe Orton <jorton@zebedee.manyfish.co.uk> - 2011.80-1
+* Mon Feb 13 2012 Joe Orton <jorton@redhat.com> - 2012.81-1
+- update to r1.81
+
+* Wed Nov  9 2011 Joe Orton <jorton@redhat.com> - 2011.80-1
 - update to r1.80
 - fix handling of certs with dublicate Subject names (#733032)
 
