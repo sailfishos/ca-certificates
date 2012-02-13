@@ -121,6 +121,9 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Feb 13 2012 Joe Orton <jorton@redhat.com> - 2012.81-1
 - update to r1.81
 
+* Thu Jan 12 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2011.80-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Wed Nov  9 2011 Joe Orton <jorton@redhat.com> - 2011.80-1
 - update to r1.80
 - fix handling of certs with dublicate Subject names (#733032)
