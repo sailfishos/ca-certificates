@@ -11,7 +11,7 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2011.80
+Version: 2012.81
 Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base
@@ -20,10 +20,9 @@ Source0: certdata.txt
 Source1: blacklist.txt
 Source2: generate-cacerts.pl
 Source3: certdata2pem.py
-Source4: fetch.sh
-Source5: mkcabundle.pl
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: perl, python
+# The binary is used in the build
+BuildRequires: openssl
 BuildArch: noarch
 
 %description
@@ -32,7 +31,7 @@ Mozilla Foundation for use with the Internet PKI.
 
 %prep
 rm -rf %{name}
-mkdir -p %{name}/certs 
+mkdir -p %{name}/certs
 
 %build
 pushd %{name}/certs

@@ -1,3 +1,8 @@
+* Mon Apr 06 2012 Marko Saukko <sage@merproject.org> - 2012.81
+- Added build dependency to openssl which is required after for 
+  the next openssl packaging update.
+- Updated to the latest version from Fedora.
+
 * Wed Nov 16 2011 Marko Saukko <marko.saukko@cybercom.com> - 2011.80
 - Fixes MER#13: ca-certificates package missing from Mer Core.
 - Removed java-openjdk and rcs build deps.
