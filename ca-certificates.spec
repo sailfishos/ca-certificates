@@ -11,8 +11,8 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2012.81
-Release: 2%{?dist}
+Version: 2012.85
+Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Mon Jul 23 2012 Joe Orton <jorton@redhat.com> - 2012.85-1
+- update to r1.85
+
 * Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2012.81-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
