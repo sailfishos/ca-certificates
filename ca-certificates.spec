@@ -12,7 +12,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2012.85
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -21,7 +21,7 @@ Source1: blacklist.txt
 Source2: generate-cacerts.pl
 Source3: certdata2pem.py
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: perl, java-openjdk, python, rcs
+BuildRequires: perl, java-openjdk, python, rcs, openssl
 BuildArch: noarch
 
 %description
@@ -118,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Mon Jul 23 2012 Joe Orton <jorton@redhat.com> - 2012.85-2
+- add openssl to BuildRequires
+
 * Mon Jul 23 2012 Joe Orton <jorton@redhat.com> - 2012.85-1
 - update to r1.85
 
