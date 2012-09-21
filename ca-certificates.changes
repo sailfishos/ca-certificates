@@ -1,3 +1,6 @@
+* Fri Sep 21 2012 Islam Amer <islam.amer@jollamobile.com> - 2012.81
+- Use multi_c_rehash to make the certificate bundle usable. Fixes MER#488
+
 * Mon Apr 06 2012 Marko Saukko <sage@merproject.org> - 2012.81
 - Added build dependency to openssl which is required after for 
   the next openssl packaging update.

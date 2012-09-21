@@ -24,6 +24,7 @@ BuildRequires: perl, python
 # The binary is used in the build
 BuildRequires: openssl
 BuildArch: noarch
+Requires: multi_c_rehash
 
 %description
 This package contains the set of CA certificates chosen by the
@@ -94,6 +95,12 @@ touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
 # /etc/ssl/certs symlink for 3rd-party tools
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
 ln -s ../pki/tls/certs $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
+
+%post
+multi_c_rehash %{_sysconfdir}/ssl/certs/
+
+%postun
+[ $1 = 0 ] && multi_c_rehash %{_sysconfdir}/ssl/certs/
 
 %files
 %defattr(-,root,root,-)
