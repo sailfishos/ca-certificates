@@ -24,7 +24,8 @@ BuildRequires: perl, python
 # The binary is used in the build
 BuildRequires: openssl
 BuildArch: noarch
-Requires: multi_c_rehash
+Requires(post): multi_c_rehash
+Requires(postun): multi_c_rehash
 
 %description
 This package contains the set of CA certificates chosen by the

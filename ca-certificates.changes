@@ -1,3 +1,7 @@
+* Fri Sep 24 2012 Islam Amer <islam.amer@jollamobile.com> - 2012.81
+- Specifiy multi_c_rehash Requires more precisely to be only in post and postun
+  to fix image building.
+
 * Fri Sep 21 2012 Islam Amer <islam.amer@jollamobile.com> - 2012.81
 - Use multi_c_rehash to make the certificate bundle usable. Fixes MER#488
 
