@@ -6,6 +6,10 @@
 #     > certdata.txt
 # 
 # Keep the RCS version in sync with the spec Version.
+#
+# The real url is:
+# https://hg.mozilla.org/mozilla-central/raw-file/d3de9d8e2b5b/security/nss/lib/ckfw/builtins/certdata.txt
+
 
 %define pkidir %{_sysconfdir}/pki
 
