@@ -7,16 +7,16 @@
 # 
 # Keep the RCS version in sync with the spec Version.
 #
-# The real url is:
-# https://hg.mozilla.org/mozilla-central/raw-file/d3de9d8e2b5b/security/nss/lib/ckfw/builtins/certdata.txt
-
+# Note: This will give us the experimental version, not one that
+#       Firefox deems "stable". For that, we should check a firefox
+#       release branch for the certdata.txt version.
 
 %define pkidir %{_sysconfdir}/pki
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2012.86
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -122,6 +122,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Wed Oct 24 2012 Paul Wouters <pwouters@redhat.com> - 2012.86-2
+- Updated blacklist with 20 entries (Diginotar, Trustwave, Comodo(?)
+- Fix to certdata2pem.py to also check for CKT_NSS_NOT_TRUSTED 
+
 * Tue Oct 23 2012 Paul Wouters <pwouters@redhat.com> - 2012.86-1
 - update to r1.86
 
