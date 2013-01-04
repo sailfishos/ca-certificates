@@ -15,8 +15,8 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2012.86
-Release: 2%{?dist}
+Version: 2012.87
+Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -122,6 +122,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/ssl/certs
 
 %changelog
+* Fri Jan 04 2013 Paul Wouters <pwouters@redhat.com> - 2012.87-1
+- Updated to r1.87 to blacklist mis-issued turktrust CA certs
+
 * Wed Oct 24 2012 Paul Wouters <pwouters@redhat.com> - 2012.86-2
 - Updated blacklist with 20 entries (Diginotar, Trustwave, Comodo(?)
 - Fix to certdata2pem.py to also check for CKT_NSS_NOT_TRUSTED 
