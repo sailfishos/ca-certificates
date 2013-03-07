@@ -16,7 +16,7 @@
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
 Version: 2012.87
-Release: 2%{?dist}
+Release: 2%{?dist}.1
 License: Public Domain
 Group: System Environment/Base
 URL: http://www.mozilla.org/
@@ -95,6 +95,11 @@ mkdir -p $RPM_BUILD_ROOT{%{pkidir}/tls/certs,%{pkidir}/java}
 
 install -p -m 644 %{name}/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 install -p -m 644 %{name}/ca-bundle.trust.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
+
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
+install -p -m 644 %{name}/ca-bundle.trust.crt $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/ca-bundle.trust.crt
+touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/ca-bundle.trust.crt
+
 ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
@@ -120,8 +125,13 @@ rm -rf $RPM_BUILD_ROOT
 %{pkidir}/tls/cert.pem
 %dir %{_sysconfdir}/ssl
 %{_sysconfdir}/ssl/certs
+%{_datadir}/pki/ca-trust-source/ca-bundle.trust.crt
 
 %changelog
+* Thu Mar 07 2013 Kai Engert <kaie@redhat.com> - 2012.87-2.fc19.1
+- Ship trust bundle file in /usr/share/pki/ca-trust-source/, temporarily in addition.
+  This location will soon become the only place containing this file.
+
 * Wed Feb 13 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2012.87-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
