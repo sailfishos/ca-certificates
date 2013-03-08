@@ -12,21 +12,58 @@
 #       release branch for the certdata.txt version.
 
 %define pkidir %{_sysconfdir}/pki
+%define catrustdir %{_sysconfdir}/pki/ca-trust
+%define classic_tls_bundle ca-bundle.crt
+%define trusted_all_bundle ca-bundle.trust.crt
+%define java_bundle java/cacerts
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
+
+# For the package version number, we use: year.{upstream version}
+#
+# The {upstream version} can be found as symbol NSS_BUILTINS_LIBRARY_VERSION at
+# http://hg.mozilla.org/projects/nss/file/default/lib/ckfw/builtins/nssckbi.h
+# which corresponds to
+# http://hg.mozilla.org/projects/nss/file/default/lib/ckfw/builtins/certdata.txt
+# (these revisions are the tip of development and might be unreleased).
+# For the latest release used in RTM versions of Mozilla Firefox, check:
+# https://hg.mozilla.org/releases/mozilla-release/file/default/security/nss/lib/ckfw/builtins/nssckbi.h
+# https://hg.mozilla.org/releases/mozilla-release/file/default/security/nss/lib/ckfw/builtins/certdata.txt
+#
+# (until 2012.87 the version was based on the cvs revision ID of certdata.txt,
+# but in 2013 the NSS projected was migrated to HG. Old version 2012.87 is 
+# equivalent to new version 2012.1.93, which would break the requirement 
+# to have increasing version numbers. However, the new scheme will work, 
+# because all future versions will start with 2013 or larger.)
+
 Version: 2012.87
-Release: 2%{?dist}.1
+Release: 9%{?dist}
 License: Public Domain
+
 Group: System Environment/Base
 URL: http://www.mozilla.org/
+
 Source0: certdata.txt
-Source1: blacklist.txt
+Source1: update-ca-trust
 Source2: generate-cacerts.pl
 Source3: certdata2pem.py
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: perl, java-openjdk, python, rcs, openssl
+Source11: README.usr
+Source12: README.etc
+Source13: README.extr
+Source14: README.java
+Source15: README.openssl
+Source16: README.pem
+Source17: README.src
+
 BuildArch: noarch
+
+Requires: p11-kit >= 0.16.3
+Requires: p11-kit-trust >= 0.16.3
+BuildRequires: perl
+BuildRequires: java-openjdk
+BuildRequires: python
+BuildRequires: openssl
 
 %description
 This package contains the set of CA certificates chosen by the
@@ -34,26 +71,16 @@ Mozilla Foundation for use with the Internet PKI.
 
 %prep
 rm -rf %{name}
-mkdir %{name} %{name}/certs %{name}/java
+mkdir %{name}
+mkdir %{name}/certs
+mkdir %{name}/java
 
 %build
 pushd %{name}/certs
- cp %{SOURCE0} %{SOURCE1} .
+ cp %{SOURCE0} .
  python %{SOURCE3} 
 popd
 pushd %{name}
- (
-   cat <<EOF
-# This is a bundle of X.509 certificates of public Certificate
-# Authorities.  It was generated from the Mozilla root CA list.
-#
-# Source: mozilla/security/nss/lib/ckfw/builtins/certdata.txt
-#
-# Generated from:
-EOF
-   ident -q %{SOURCE0} | sed '1d;s/^/#/';
-   echo '#';
- ) > ca-bundle.crt
  (
    cat <<EOF
 # This is a bundle of X.509 certificates of public Certificate
@@ -67,67 +94,188 @@ EOF
 EOF
    ident -q %{SOURCE0} | sed '1d;s/^/#/';
    echo '#';
- ) > ca-bundle.trust.crt
+ ) > %{trusted_all_bundle}
  for f in certs/*.crt; do 
    tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
-   case $tbits in
-   *serverAuth*) openssl x509 -text -in "$f" >> ca-bundle.crt ;;
-   esac
+   distbits=`sed -n '/^# openssl-distrust/{s/^.*=//;p;}' $f`
+   targs=""
    if [ -n "$tbits" ]; then
-      targs=""
       for t in $tbits; do
          targs="${targs} -addtrust $t"
       done
-      openssl x509 -text -in "$f" -trustout $targs >> ca-bundle.trust.crt
+   fi
+   if [ -n "$distbits" ]; then
+      for t in $distbits; do
+         targs="${targs} -addreject $t"
+      done
+   fi
+   if [ -n "$targs" ]; then
+      openssl x509 -text -in "$f" -trustout $targs >> %{trusted_all_bundle}
    fi
  done
 popd
-pushd %{name}/java
- test -s ../ca-bundle.crt || exit 1
- %{__perl} %{SOURCE2} %{_bindir}/keytool ../ca-bundle.crt
- touch -r %{SOURCE0} cacerts
-popd
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-mkdir -p $RPM_BUILD_ROOT{%{pkidir}/tls/certs,%{pkidir}/java}
-
-install -p -m 644 %{name}/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
-install -p -m 644 %{name}/ca-bundle.trust.crt $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
-
+mkdir -p -m 755 $RPM_BUILD_ROOT%{pkidir}/tls/certs
+mkdir -p -m 755 $RPM_BUILD_ROOT%{pkidir}/java
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
-install -p -m 644 %{name}/ca-bundle.trust.crt $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/ca-bundle.trust.crt
-touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/ca-bundle.trust.crt
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
 
-ln -s certs/ca-bundle.crt $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
-touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.crt
-touch -r %{SOURCE0} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-bundle.trust.crt
+install -p -m 644 %{SOURCE11} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/README
+install -p -m 644 %{SOURCE12} $RPM_BUILD_ROOT%{catrustdir}/README
+install -p -m 644 %{SOURCE13} $RPM_BUILD_ROOT%{catrustdir}/extracted/README
+install -p -m 644 %{SOURCE14} $RPM_BUILD_ROOT%{catrustdir}/extracted/java/README
+install -p -m 644 %{SOURCE15} $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/README
+install -p -m 644 %{SOURCE16} $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/README
+install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/source/README
 
-# Install Java cacerts file.
-mkdir -p -m 700 $RPM_BUILD_ROOT%{pkidir}/java
-install -p -m 644 %{name}/java/cacerts $RPM_BUILD_ROOT%{pkidir}/java/
+install -p -m 644 %{name}/%{trusted_all_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{trusted_all_bundle}
+touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{trusted_all_bundle}
+
+# TODO: consider to dynamically create the update-ca-trust script from within
+#       this .spec file, in order to have the output file+directory names at once place only.
+install -p -m 755 %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/update-ca-trust
+
+# touch ghosted files that will be extracted dynamically
+touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/tls-ca-bundle.pem
+touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/email-ca-bundle.pem
+touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/objsign-ca-bundle.pem
+touch $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{trusted_all_bundle}
+touch $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 
 # /etc/ssl/certs symlink for 3rd-party tools
-mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
-ln -s ../pki/tls/certs $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
+ln -s ../pki/tls/certs \
+      $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
+# legacy filenames
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+      $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+      $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
+ln -s %{catrustdir}/extracted/openssl/%{trusted_all_bundle} \
+      $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{trusted_all_bundle}
+ln -s %{catrustdir}/extracted/%{java_bundle} \
+      $RPM_BUILD_ROOT%{pkidir}/%{java_bundle}
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+
+%pre
+if [ $1 -gt 1 ] ; then
+  # Upgrade or Downgrade.
+  # If the classic filename is a regular file, then we are upgrading
+  # from an old package and we will move it to an .rpmsave backup file.
+  # If the filename is a symbolic link, then we are good already.
+  # If the system will later be downgraded to an old package with regular 
+  # files, and afterwards updated again to a newer package with symlinks,
+  # and the old .rpmsave backup file didn't get cleaned up,
+  # then we don't backup again. We keep the older backup file.
+  # In other words, if an .rpmsave file already exists, we don't overwrite it.
+  #
+  if ! test -e %{pkidir}/%{java_bundle}.rpmsave; then
+    # no backup yet
+    if ! test -L %{pkidir}/%{java_bundle}; then
+      # it's an old regular file, not a link
+      mv -f %{pkidir}/%{java_bundle} %{pkidir}/%{java_bundle}.rpmsave
+    fi
+  fi
+
+  if ! test -e %{pkidir}/tls/certs/%{classic_tls_bundle}.rpmsave; then
+    # no backup yet
+    if ! test -L %{pkidir}/tls/certs/%{classic_tls_bundle}; then
+      # it's an old regular file, not a link
+      mv -f %{pkidir}/tls/certs/%{classic_tls_bundle} %{pkidir}/tls/certs/%{classic_tls_bundle}.rpmsave
+    fi
+  fi
+
+  if ! test -e %{pkidir}/tls/certs/%{trusted_all_bundle}.rpmsave; then
+    # no backup yet
+    if ! test -L %{pkidir}/tls/certs/%{trusted_all_bundle}; then
+      # it's an old regular file, not a link
+      mv -f %{pkidir}/tls/certs/%{trusted_all_bundle} %{pkidir}/tls/certs/%{trusted_all_bundle}.rpmsave
+    fi
+  fi
+fi
+
+
+%post
+#if [ $1 -gt 1 ] ; then
+#  # when upgrading or downgrading
+#fi
+%{_bindir}/update-ca-trust
+
+
 %files
 %defattr(-,root,root,-)
-%dir %{pkidir}/java
-%config(noreplace) %{pkidir}/java/cacerts
+
+%dir %{_sysconfdir}/ssl
 %dir %{pkidir}/tls
 %dir %{pkidir}/tls/certs
-%config(noreplace) %{pkidir}/tls/certs/ca-bundle.*crt
+%dir %{pkidir}/java
+%dir %{catrustdir}
+%dir %{catrustdir}/source
+%dir %{catrustdir}/extracted
+%dir %{catrustdir}/extracted/pem
+%dir %{catrustdir}/extracted/openssl
+%dir %{catrustdir}/extracted/java
+%dir %{_datadir}/pki/ca-trust-source/
+
+%{_datadir}/pki/ca-trust-source/README
+%{catrustdir}/README
+%{catrustdir}/extracted/README
+%{catrustdir}/extracted/java/README
+%{catrustdir}/extracted/openssl/README
+%{catrustdir}/extracted/pem/README
+%{catrustdir}/source/README
+
+# symlinks for old locations
 %{pkidir}/tls/cert.pem
-%dir %{_sysconfdir}/ssl
+%{pkidir}/tls/certs/%{classic_tls_bundle}
+%{pkidir}/tls/certs/%{trusted_all_bundle}
+%{pkidir}/%{java_bundle}
+# symlink directory
 %{_sysconfdir}/ssl/certs
-%{_datadir}/pki/ca-trust-source/ca-bundle.trust.crt
+# master bundle file with trust
+%{_datadir}/pki/ca-trust-source/%{trusted_all_bundle}
+# update/extract tool
+%{_bindir}/update-ca-trust
+# files extracted files
+%ghost %{catrustdir}/extracted/pem/tls-ca-bundle.pem
+%ghost %{catrustdir}/extracted/pem/email-ca-bundle.pem
+%ghost %{catrustdir}/extracted/pem/objsign-ca-bundle.pem
+%ghost %{catrustdir}/extracted/openssl/%{trusted_all_bundle}
+%ghost %{catrustdir}/extracted/%{java_bundle}
+
 
 %changelog
+* Fri Mar 08 2013 Kai Engert <kaie@redhat.com> - 2012.87-9
+- Major rework for the Fedora SharedSystemCertificates feature.
+- Only ship a PEM bundle file using the BEGIN TRUSTED CERTIFICATE file format.
+- Require the p11-kit package that contains tools to automatically create
+  other file format bundles.
+- Convert old file locations to symbolic links that point to dynamically
+  generated files.
+- Old files, which might have been locally modified, will be saved in backup 
+  files with .rpmsave extension.
+- Added a update-ca-certificates script which can be used to regenerate
+  the merged trusted output.
+- Refer to the various README files that have been added for more detailed
+  explanation of the new system.
+- No longer require rsc for building.
+- Add explanation for the future version numbering scheme,
+  because the old numbering scheme was based on upstream using cvs,
+  which is no longer true, and therefore can no longer be used.
+- Includes changes from rhbz#873369.
+
 * Thu Mar 07 2013 Kai Engert <kaie@redhat.com> - 2012.87-2.fc19.1
 - Ship trust bundle file in /usr/share/pki/ca-trust-source/, temporarily in addition.
   This location will soon become the only place containing this file.
