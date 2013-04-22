@@ -12,13 +12,13 @@ Name: ca-certificates
 # For the package version number, we use: year.{upstream version}
 #
 # The {upstream version} can be found as symbol NSS_BUILTINS_LIBRARY_VERSION at
-# http://hg.mozilla.org/projects/nss/file/default/lib/ckfw/builtins/nssckbi.h
+# http://hg.mozilla.org/projects/nss/raw-file/default/lib/ckfw/builtins/nssckbi.h
 # which corresponds to
-# http://hg.mozilla.org/projects/nss/file/default/lib/ckfw/builtins/certdata.txt
+# http://hg.mozilla.org/projects/nss/raw-file/default/lib/ckfw/builtins/certdata.txt
 # (these revisions are the tip of development and might be unreleased).
 # For the latest release used in RTM versions of Mozilla Firefox, check:
-# https://hg.mozilla.org/releases/mozilla-release/file/default/security/nss/lib/ckfw/builtins/nssckbi.h
-# https://hg.mozilla.org/releases/mozilla-release/file/default/security/nss/lib/ckfw/builtins/certdata.txt
+# https://hg.mozilla.org/releases/mozilla-release/raw-file/default/security/nss/lib/ckfw/builtins/nssckbi.h
+# https://hg.mozilla.org/releases/mozilla-release/raw-file/default/security/nss/lib/ckfw/builtins/certdata.txt
 #
 # (until 2012.87 the version was based on the cvs revision ID of certdata.txt,
 # but in 2013 the NSS projected was migrated to HG. Old version 2012.87 is 
@@ -27,16 +27,18 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2012.87
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
 URL: http://www.mozilla.org/
 
+#Please always update both certdata.txt and nssckbi.h
 Source0: certdata.txt
-Source1: update-ca-trust
-Source2: trust-fixes
-Source3: certdata2pem.py
+Source1: nssckbi.h
+Source2: update-ca-trust
+Source3: trust-fixes
+Source4: certdata2pem.py
 Source11: README.usr
 Source12: README.etc
 Source13: README.extr
@@ -68,7 +70,7 @@ mkdir %{name}/java
 pushd %{name}/certs
  pwd
  cp %{SOURCE0} .
- python %{SOURCE3} >c2p.log 2>c2p.err
+ python %{SOURCE4} >c2p.log 2>c2p.err
 popd
 pushd %{name}
  (
@@ -78,11 +80,12 @@ pushd %{name}
 # These certificates are in the OpenSSL "TRUSTED CERTIFICATE"
 # format and have trust bits set accordingly.
 #
-# Source: mozilla/security/nss/lib/ckfw/builtins/certdata.txt
+# Source: nss/lib/ckfw/builtins/certdata.txt
+# Source: nss/lib/ckfw/builtins/nssckbi.h
 #
 # Generated from:
 EOF
-   ident -q %{SOURCE0} | sed '1d;s/^/#/';
+   cat %{SOURCE1}  |grep -w NSS_BUILTINS_LIBRARY_VERSION | awk '{print "# " $2 " " $3}';
    echo '#';
  ) > %{trusted_all_bundle}
  for f in certs/*.crt; do 
@@ -112,7 +115,7 @@ EOF
    cat "$p" >> %{bundle_supplement}
  done
  # Append our trust fixes
- cat %{SOURCE2} >> %{bundle_supplement}
+ cat %{SOURCE3} >> %{bundle_supplement}
 popd
 
 
@@ -150,7 +153,7 @@ touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{bundle_supp
 
 # TODO: consider to dynamically create the update-ca-trust script from within
 #       this .spec file, in order to have the output file+directory names at once place only.
-install -p -m 755 %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/update-ca-trust
+install -p -m 755 %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/update-ca-trust
 
 # touch ghosted files that will be extracted dynamically
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/tls-ca-bundle.pem
@@ -271,6 +274,12 @@ fi
 
 
 %changelog
+* Mon Apr 22 2013 Kai Engert <kaie@redhat.com> - 2012.87-12
+- Use both label and serial to identify cert during conversion, rhbz#927601
+- Add myself as contributor to certdata2.pem.py and remove use of rcs/ident.
+  (thanks to Michael Shuler for suggesting to do so)
+- Update source URLs and comments, add source file for version information.
+
 * Tue Mar 19 2013 Kai Engert <kaie@redhat.com> - 2012.87-11
 - adjust to changed and new functionality provided by p11-kit 0.17.3
 - updated READMEs to describe the new directory-specific treatment of files
