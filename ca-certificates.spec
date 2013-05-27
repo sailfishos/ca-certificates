@@ -27,7 +27,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2013.1.94
-Release: 12%{?dist}
+Release: 13%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -274,7 +274,10 @@ fi
 
 
 %changelog
-* Mon May 27 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-1
+* Mon May 27 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-13
+- use correct command in README files, rhbz#961809
+
+* Mon May 27 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-12
 - update to version 1.94 provided by NSS 3.15 (beta)
 
 * Mon Apr 22 2013 Kai Engert <kaie@redhat.com> - 2012.87-12
