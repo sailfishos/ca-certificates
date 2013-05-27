@@ -26,7 +26,7 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2012.87
+Version: 2013.1.94
 Release: 12%{?dist}
 License: Public Domain
 
@@ -274,6 +274,9 @@ fi
 
 
 %changelog
+* Mon May 27 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-1
+- update to version 1.94 provided by NSS 3.15 (beta)
+
 * Mon Apr 22 2013 Kai Engert <kaie@redhat.com> - 2012.87-12
 - Use both label and serial to identify cert during conversion, rhbz#927601
 - Add myself as contributor to certdata2.pem.py and remove use of rcs/ident.
