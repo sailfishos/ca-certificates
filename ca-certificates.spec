@@ -27,7 +27,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2013.1.94
-Release: 13%{?dist}
+Release: 14%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -39,6 +39,7 @@ Source1: nssckbi.h
 Source2: update-ca-trust
 Source3: trust-fixes
 Source4: certdata2pem.py
+Source10: update-ca-trust.8.txt
 Source11: README.usr
 Source12: README.etc
 Source13: README.extr
@@ -55,6 +56,8 @@ BuildRequires: perl
 BuildRequires: java-openjdk
 BuildRequires: python
 BuildRequires: openssl
+BuildRequires: asciidoc
+BuildRequires: libxslt
 
 %description
 This package contains the set of CA certificates chosen by the
@@ -92,6 +95,7 @@ EOF
    echo "processing $f"
    tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
    distbits=`sed -n '/^# openssl-distrust/{s/^.*=//;p;}' $f`
+   alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
    targs=""
    if [ -n "$tbits" ]; then
       for t in $tbits; do
@@ -105,10 +109,10 @@ EOF
    fi
    if [ -n "$targs" ]; then
       echo "trust flags $targs for $f" >> info.trust
-      openssl x509 -text -in "$f" -trustout $targs >> %{trusted_all_bundle}
+      openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{trusted_all_bundle}
    else
       echo "no trust flags for $f" >> info.notrust
-      openssl x509 -text -in "$f" >> %{neutral_bundle}
+      openssl x509 -text -in "$f" -setalias "$alias" >> %{neutral_bundle}
    fi
  done
  for p in certs/*.p11-kit; do 
@@ -117,6 +121,11 @@ EOF
  # Append our trust fixes
  cat %{SOURCE3} >> %{bundle_supplement}
 popd
+
+#manpage
+cp %{SOURCE10} %{name}/update-ca-trust.8.txt
+asciidoc.py -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
+xsltproc --nonet -o %{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/update-ca-trust.8.xml
 
 
 %install
@@ -135,7 +144,9 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_mandir}/man8
 
+install -p -m 644 %{name}/update-ca-trust.8 $RPM_BUILD_ROOT%{_mandir}/man8
 install -p -m 644 %{SOURCE11} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/README
 install -p -m 644 %{SOURCE12} $RPM_BUILD_ROOT%{catrustdir}/README
 install -p -m 644 %{SOURCE13} $RPM_BUILD_ROOT%{catrustdir}/extracted/README
@@ -244,6 +255,7 @@ fi
 %dir %{_datadir}/pki/ca-trust-source/anchors
 %dir %{_datadir}/pki/ca-trust-source/blacklist
 
+%{_mandir}/man8/update-ca-trust.8.gz
 %{_datadir}/pki/ca-trust-source/README
 %{catrustdir}/README
 %{catrustdir}/extracted/README
@@ -274,6 +286,11 @@ fi
 
 
 %changelog
+* Mon Jul 08 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-14
+- added a manual page and related build requirements
+- simplify the README files now that we have a manual page
+- set a certificate alias in trusted bundle (thanks to Ludwig Nussel)
+
 * Mon May 27 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-13
 - use correct command in README files, rhbz#961809
 
