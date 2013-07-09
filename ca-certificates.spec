@@ -27,7 +27,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2013.1.94
-Release: 14%{?dist}
+Release: 15%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -286,6 +286,9 @@ fi
 
 
 %changelog
+* Tue Jul 09 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-15
+- clarification updates to manual page
+
 * Mon Jul 08 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-14
 - added a manual page and related build requirements
 - simplify the README files now that we have a manual page

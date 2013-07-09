@@ -147,11 +147,9 @@ directories or in any of their subdirectories, or after adding a file,
 it is necessary to run the 'update-ca-trust extract' command,
 in order to update the consolidated files in /etc/pki/ca-trust/extracted/ .
 
-Legacy applications that rely on legacy filenames benefit from configuration
-updates only if this dynamic configuration feature is in the enabled state.
-
-Applications that use the legacy PKCS#11 module libnssckbi.so with the
-configuration feature in the enabled state, and any application capable of
+Applications that load the legacy PKCS#11 module using filename libnssckbi.so 
+(which has been converted into a symbolic link pointing to the new module)
+and any application capable of 
 loading PKCS#11 modules and loading p11-kit-trust.so, will benefit from
 the dynamically merged set of certificates and trust information stored in the
 /usr/share/pki/ca-trust-source/ and /etc/pki/ca-trust/source/ directories.
@@ -218,18 +216,15 @@ FILES
 -----
 /etc/pki/tls/certs/ca-bundle.crt::
 	Legacy filename, file contains a list of CA certificates trusted for TLS server authentication usage, in the simple BEGIN/END CERTIFICATE file format, without distrust information.
-	If legacy support is disabled, this is a static file and will remain unchanged.
-	Only if the legacy support is enabled, this file is a symbolic link that refers to the consolidated output created by the update-ca-trust command.
+	This file is a symbolic link that refers to the consolidated output created by the update-ca-trust command.
 
 /etc/pki/tls/certs/ca-bundle.trust.crt::
 	Legacy filename, file contains a list of CA certificates in the extended BEGIN/END TRUSTED CERTIFICATE file format, which includes trust (and/or distrust) flags specific to certificate usage.
-	If legacy support is disabled, this is a static file and will remain unchanged.
-	Only if the legacy support is enabled, this file is a symbolic link that refers to the consolidated output created by the update-ca-trust command.
+	This file is a symbolic link that refers to the consolidated output created by the update-ca-trust command.
 
 /etc/pki/java/cacerts::
 	Legacy filename, file contains a list of CA certificates trusted for TLS server authentication usage, in the Java keystore file format, without distrust information.
-	If legacy support is disabled, this is a static file and will remain unchanged.
-	Only if the legacy support is enabled, this file is a symbolic link that refers to the consolidated output created by the update-ca-trust command.
+	This file is a symbolic link that refers to the consolidated output created by the update-ca-trust command.
 
 /usr/share/pki/ca-trust-source::
 	Contains multiple, low priority source configuration files as explained in section <<sourceconf,SOURCE CONFIGURATION>>. Please pay attention to the specific meanings of the respective subdirectories.
