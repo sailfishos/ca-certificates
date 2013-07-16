@@ -11,7 +11,7 @@
 
 Summary: The Mozilla CA root certificate bundle
 Name: ca-certificates
-Version: 2012.81
+Version: 2012.87
 Release: 1%{?dist}
 License: Public Domain
 Group: System Environment/Base

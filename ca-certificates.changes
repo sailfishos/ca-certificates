@@ -1,3 +1,7 @@
+* Thu Jul 18 2013 Davide Bettio <davide.bettio@ispirata.com> - 2012.87
+- Update certificates to 2012.87 (from Fedora git).
+- Update of blacklist.txt from Fedora git.
+
 * Fri Sep 24 2012 Islam Amer <islam.amer@jollamobile.com> - 2012.81
 - Specifiy multi_c_rehash Requires more precisely to be only in post and postun
   to fix image building.
