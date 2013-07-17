@@ -286,6 +286,8 @@ fi
 
 
 %changelog
+- improve manpage
+
 * Tue Jul 09 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-15
 - clarification updates to manual page
 
