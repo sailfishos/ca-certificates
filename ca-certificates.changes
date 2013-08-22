@@ -1,3 +1,6 @@
+* Thu Aug 22 2013 Juha Kallioinen <juha.kallioinen@jollamobile.com> - 2012.87
+- Do not fail %postun script when upgrading the package
+
 * Thu Jul 18 2013 Davide Bettio <davide.bettio@ispirata.com> - 2012.87
 - Update certificates to 2012.87 (from Fedora git).
 - Update of blacklist.txt from Fedora git.

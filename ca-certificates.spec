@@ -102,6 +102,7 @@ multi_c_rehash %{_sysconfdir}/ssl/certs/
 
 %postun
 [ $1 = 0 ] && multi_c_rehash %{_sysconfdir}/ssl/certs/
+exit 0
 
 %files
 %defattr(-,root,root,-)
