@@ -27,7 +27,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2013.1.94
-Release: 16%{?dist}
+Release: 17%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -286,6 +286,9 @@ fi
 
 
 %changelog
+* Tue Sep 03 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-17
+- merge manual improvement from f19
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.1.94-16
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
