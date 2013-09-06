@@ -27,7 +27,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2013.1.94
-Release: 17%{?dist}
+Release: 18%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -50,8 +50,8 @@ Source17: README.src
 
 BuildArch: noarch
 
-Requires: p11-kit >= 0.17.3
-Requires: p11-kit-trust >= 0.17.3
+Requires: p11-kit >= 0.19.2
+Requires: p11-kit-trust >= 0.19.2
 BuildRequires: perl
 BuildRequires: java-openjdk
 BuildRequires: python
@@ -286,6 +286,10 @@ fi
 
 
 %changelog
+* Fri Sep 06 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-18
+- Update the Entrust root stapled extension for compatibility with 
+  p11-kit version 0.19.2, patch by Stef Walter, rhbz#988745
+
 * Tue Sep 03 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-17
 - merge manual improvement from f19
 
