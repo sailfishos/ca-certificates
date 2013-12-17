@@ -26,8 +26,8 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2013.1.94
-Release: 18%{?dist}
+Version: 2013.1.95
+Release: 1%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -286,6 +286,9 @@ fi
 
 
 %changelog
+* Tue Dec 17 2013 Kai Engert <kaie@redhat.com> - 2013.1.95-1
+- Update to CKBI 1.95 from NSS 3.15.3.1
+
 * Fri Sep 06 2013 Kai Engert <kaie@redhat.com> - 2013.1.94-18
 - Update the Entrust root stapled extension for compatibility with 
   p11-kit version 0.19.2, patch by Stef Walter, rhbz#988745
