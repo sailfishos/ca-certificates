@@ -11,14 +11,22 @@ Name: ca-certificates
 
 # For the package version number, we use: year.{upstream version}
 #
-# The {upstream version} can be found as symbol NSS_BUILTINS_LIBRARY_VERSION at
-# http://hg.mozilla.org/projects/nss/raw-file/default/lib/ckfw/builtins/nssckbi.h
-# which corresponds to
-# http://hg.mozilla.org/projects/nss/raw-file/default/lib/ckfw/builtins/certdata.txt
-# (these revisions are the tip of development and might be unreleased).
-# For the latest release used in RTM versions of Mozilla Firefox, check:
+# The {upstream version} can be found as symbol
+# NSS_BUILTINS_LIBRARY_VERSION in file nss/lib/ckfw/builtins/nssckbi.h
+# which corresponds to the data in file nss/lib/ckfw/builtins/certdata.txt.
+#
+# The files should be taken from a released version of NSS, as published
+# at https://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/
+#
+# The versions that are used by the latest released version of 
+# Mozilla Firefox should be available from:
 # https://hg.mozilla.org/releases/mozilla-release/raw-file/default/security/nss/lib/ckfw/builtins/nssckbi.h
 # https://hg.mozilla.org/releases/mozilla-release/raw-file/default/security/nss/lib/ckfw/builtins/certdata.txt
+#
+# The most recent development versions of the files can be found at
+# http://hg.mozilla.org/projects/nss/raw-file/default/lib/ckfw/builtins/nssckbi.h
+# http://hg.mozilla.org/projects/nss/raw-file/default/lib/ckfw/builtins/certdata.txt
+# (but these files might have not yet been released).
 #
 # (until 2012.87 the version was based on the cvs revision ID of certdata.txt,
 # but in 2013 the NSS projected was migrated to HG. Old version 2012.87 is 
@@ -26,7 +34,7 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2013.1.95
+Version: 2013.1.96
 Release: 1%{?dist}
 License: Public Domain
 
@@ -286,6 +294,9 @@ fi
 
 
 %changelog
+* Thu Jan 09 2014 Kai Engert <kaie@redhat.com> - 2013.1.96-1
+- Update to CKBI 1.96 from NSS 3.15.4
+
 * Tue Dec 17 2013 Kai Engert <kaie@redhat.com> - 2013.1.95-1
 - Update to CKBI 1.95 from NSS 3.15.3.1
 
