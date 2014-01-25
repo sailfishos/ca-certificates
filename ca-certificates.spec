@@ -35,7 +35,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2013.1.96
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -259,6 +259,7 @@ fi
 %dir %{catrustdir}/extracted/pem
 %dir %{catrustdir}/extracted/openssl
 %dir %{catrustdir}/extracted/java
+%dir %{_datadir}/pki
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
 %dir %{_datadir}/pki/ca-trust-source/blacklist
@@ -294,6 +295,9 @@ fi
 
 
 %changelog
+* Sat Jan 25 2014 Ville Skyttä <ville.skytta@iki.fi> - 2013.1.96-2
+- Own the %%{_datadir}/pki dir.
+
 * Thu Jan 09 2014 Kai Engert <kaie@redhat.com> - 2013.1.96-1
 - Update to CKBI 1.96 from NSS 3.15.4
 
