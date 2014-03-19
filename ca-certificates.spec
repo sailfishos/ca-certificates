@@ -34,8 +34,8 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2013.1.96
-Release: 3%{?dist}
+Version: 2013.1.97
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -294,6 +294,9 @@ fi
 
 
 %changelog
+* Wed Mar 19 2014 Kai Engert <kaie@redhat.com> - 2013.1.97-2
+- Update to CKBI 1.97 from NSS 3.16
+
 * Mon Feb 10 2014 Kai Engert <kaie@redhat.com> - 2013.1.96-3
 - Remove openjdk build dependency
 
