@@ -35,7 +35,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2013.1.97
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -294,6 +294,9 @@ fi
 
 
 %changelog
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.1.97-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Wed Mar 19 2014 Kai Engert <kaie@redhat.com> - 2013.1.97-2
 - Update to CKBI 1.97 from NSS 3.16
 
