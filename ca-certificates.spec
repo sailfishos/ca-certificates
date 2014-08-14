@@ -34,8 +34,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2013.1.97
-Release: 3%{?dist}
+Version: 2014.2.1
+# for Rawhide, please always use release >= 2
+# for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -89,6 +91,9 @@ pushd %{name}
 # Authorities.  It was generated from the Mozilla root CA list.
 # These certificates are in the OpenSSL "TRUSTED CERTIFICATE"
 # format and have trust bits set accordingly.
+# An exception are auxiliary certificates, without positive or negative
+# trust, but are used to assist in finding a preferred trust path.
+# Those neutral certificates use the plain BEGIN CERTIFICATE format.
 #
 # Source: nss/lib/ckfw/builtins/certdata.txt
 # Source: nss/lib/ckfw/builtins/nssckbi.h
@@ -119,7 +124,12 @@ EOF
       openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{trusted_all_bundle}
    else
       echo "no trust flags for $f" >> info.notrust
-      openssl x509 -text -in "$f" -setalias "$alias" >> %{neutral_bundle}
+      # p11-kit-trust defines empty trust lists as "rejected for all purposes".
+      # That's why we use the simple file format
+      #   (BEGIN CERTIFICATE, no trust information)
+      # because p11-kit-trust will treat it as a certificate with neutral trust.
+      # This means we cannot use the -setalias feature for neutral trust certs.
+      openssl x509 -text -in "$f" >> %{neutral_bundle}
    fi
  done
  for p in certs/*.p11-kit; do 
@@ -294,6 +304,10 @@ fi
 
 
 %changelog
+* Thu Aug 14 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-2
+- Update to CKBI 2.1 from NSS 3.16.4
+- Fix rhbz#1130226
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.1.97-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
