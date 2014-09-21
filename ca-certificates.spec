@@ -37,7 +37,7 @@ Name: ca-certificates
 Version: 2014.2.1
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -304,6 +304,11 @@ fi
 
 
 %changelog
+* Sun Sep 21 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-3
+- Temporarily re-enable several legacy root CA certificates because of
+  compatibility issues with software based on OpenSSL/GnuTLS,
+  see rhbz#1144808
+
 * Thu Aug 14 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-2
 - Update to CKBI 2.1 from NSS 3.16.4
 - Fix rhbz#1130226
