@@ -2,6 +2,8 @@
 %define catrustdir %{_sysconfdir}/pki/ca-trust
 %define classic_tls_bundle ca-bundle.crt
 %define trusted_all_bundle ca-bundle.trust.crt
+%define legacy_enable_bundle ca-bundle.legacy.enable.crt
+%define legacy_disable_bundle ca-bundle.legacy.disable.crt
 %define neutral_bundle ca-bundle.neutral-trust.crt
 %define bundle_supplement ca-bundle.supplement.p11-kit
 %define java_bundle java/cacerts
@@ -37,7 +39,7 @@ Name: ca-certificates
 Version: 2014.2.1
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -49,6 +51,8 @@ Source1: nssckbi.h
 Source2: update-ca-trust
 Source3: trust-fixes
 Source4: certdata2pem.py
+Source5: ca-legacy.conf
+Source6: ca-legacy
 Source10: update-ca-trust.8.txt
 Source11: README.usr
 Source12: README.etc
@@ -76,6 +80,8 @@ Mozilla Foundation for use with the Internet PKI.
 rm -rf %{name}
 mkdir %{name}
 mkdir %{name}/certs
+mkdir %{name}/certs/legacy-enable
+mkdir %{name}/certs/legacy-disable
 mkdir %{name}/java
 
 %build
@@ -103,6 +109,7 @@ EOF
    cat %{SOURCE1}  |grep -w NSS_BUILTINS_LIBRARY_VERSION | awk '{print "# " $2 " " $3}';
    echo '#';
  ) > %{trusted_all_bundle}
+ touch %{neutral_bundle}
  for f in certs/*.crt; do 
    echo "processing $f"
    tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
@@ -132,9 +139,45 @@ EOF
       openssl x509 -text -in "$f" >> %{neutral_bundle}
    fi
  done
- for p in certs/*.p11-kit; do 
-   cat "$p" >> %{bundle_supplement}
+
+ for f in certs/legacy-enable/*.crt; do 
+   echo "processing $f"
+   tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
+   alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
+   targs=""
+   if [ -n "$tbits" ]; then
+      for t in $tbits; do
+         targs="${targs} -addtrust $t"
+      done
+   fi
+   if [ -n "$targs" ]; then
+      echo "legacy enable flags $targs for $f" >> info.trust
+      openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_enable_bundle}
+   fi
  done
+
+ for f in certs/legacy-disable/*.crt; do 
+   echo "processing $f"
+   tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
+   alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
+   targs=""
+   if [ -n "$tbits" ]; then
+      for t in $tbits; do
+         targs="${targs} -addtrust $t"
+      done
+   fi
+   if [ -n "$targs" ]; then
+      echo "legacy disable flags $targs for $f" >> info.trust
+      openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_disable_bundle}
+   fi
+ done
+
+ P11FILES=`find certs -name *.p11-kit | wc -l`
+ if [ $P11FILES -ne 0 ]; then
+   for p in certs/*.p11-kit; do 
+     cat "$p" >> %{bundle_supplement}
+   done
+ fi
  # Append our trust fixes
  cat %{SOURCE3} >> %{bundle_supplement}
 popd
@@ -160,6 +203,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_mandir}/man8
 
@@ -175,13 +219,24 @@ install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/source/README
 install -p -m 644 %{name}/%{trusted_all_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{trusted_all_bundle}
 install -p -m 644 %{name}/%{neutral_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{neutral_bundle}
 install -p -m 644 %{name}/%{bundle_supplement} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{bundle_supplement}
+
+install -p -m 644 %{name}/%{legacy_enable_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_enable_bundle}
+install -p -m 644 %{name}/%{legacy_disable_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_disable_bundle}
+
+install -p -m 644 %{SOURCE5} $RPM_BUILD_ROOT%{catrustdir}/ca-legacy.conf
+
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{trusted_all_bundle}
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{neutral_bundle}
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{bundle_supplement}
 
+touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_enable_bundle}
+touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_disable_bundle}
+
 # TODO: consider to dynamically create the update-ca-trust script from within
 #       this .spec file, in order to have the output file+directory names at once place only.
 install -p -m 755 %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/update-ca-trust
+
+install -p -m 755 %{SOURCE6} $RPM_BUILD_ROOT%{_bindir}/ca-legacy
 
 # touch ghosted files that will be extracted dynamically
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/tls-ca-bundle.pem
@@ -250,6 +305,7 @@ fi
 #if [ $1 -gt 1 ] ; then
 #  # when upgrading or downgrading
 #fi
+%{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
 
 
@@ -272,6 +328,9 @@ fi
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
 %dir %{_datadir}/pki/ca-trust-source/blacklist
+%dir %{_datadir}/pki/ca-trust-legacy
+
+%config(noreplace) %{catrustdir}/ca-legacy.conf
 
 %{_mandir}/man8/update-ca-trust.8.gz
 %{_datadir}/pki/ca-trust-source/README
@@ -293,8 +352,12 @@ fi
 %{_datadir}/pki/ca-trust-source/%{trusted_all_bundle}
 %{_datadir}/pki/ca-trust-source/%{neutral_bundle}
 %{_datadir}/pki/ca-trust-source/%{bundle_supplement}
+%{_datadir}/pki/ca-trust-legacy/%{legacy_enable_bundle}
+%{_datadir}/pki/ca-trust-legacy/%{legacy_disable_bundle}
 # update/extract tool
 %{_bindir}/update-ca-trust
+%{_bindir}/ca-legacy
+%ghost %{catrustdir}/source/ca-bundle.legacy.crt
 # files extracted files
 %ghost %{catrustdir}/extracted/pem/tls-ca-bundle.pem
 %ghost %{catrustdir}/extracted/pem/email-ca-bundle.pem
@@ -304,6 +367,13 @@ fi
 
 
 %changelog
+* Tue Oct 28 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-4
+- Introduce the ca-legacy utility and a ca-legacy.conf configuration file.
+  By default, legacy roots required for OpenSSL/GnuTLS compatibility
+  are kept enabled. Using the ca-legacy utility, the legacy roots can be
+  disabled. If disabled, the system will use the trust set as provided
+  by the upstream Mozilla CA list. (See also: rhbz#1158197)
+
 * Sun Sep 21 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-3
 - Temporarily re-enable several legacy root CA certificates because of
   compatibility issues with software based on OpenSSL/GnuTLS,
