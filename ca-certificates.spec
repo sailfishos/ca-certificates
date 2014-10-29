@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2014.2.1
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -66,6 +66,7 @@ BuildArch: noarch
 
 Requires: p11-kit >= 0.19.2
 Requires: p11-kit-trust >= 0.19.2
+Requires: coreutils
 BuildRequires: perl
 BuildRequires: python
 BuildRequires: openssl
@@ -367,6 +368,9 @@ fi
 
 
 %changelog
+* Wed Oct 29 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-5
+- add Requires: coreutils (rhbz#1158343)
+
 * Tue Oct 28 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-4
 - Introduce the ca-legacy utility and a ca-legacy.conf configuration file.
   By default, legacy roots required for OpenSSL/GnuTLS compatibility
