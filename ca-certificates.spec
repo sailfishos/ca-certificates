@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2014.2.1
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -66,7 +66,7 @@ BuildArch: noarch
 
 Requires: p11-kit >= 0.19.2
 Requires: p11-kit-trust >= 0.19.2
-Requires: coreutils
+Requires(post): coreutils
 BuildRequires: perl
 BuildRequires: python
 BuildRequires: openssl
@@ -368,6 +368,9 @@ fi
 
 
 %changelog
+* Fri Nov 14 2014 Peter Lemenkov <lemenkov@gmail.com> - 2014.2.1-6
+- A proper fix for rhbz#1158343
+
 * Wed Oct 29 2014 Kai Engert <kaie@redhat.com> - 2014.2.1-5
 - add Requires: coreutils (rhbz#1158343)
 
