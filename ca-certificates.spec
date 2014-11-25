@@ -37,9 +37,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2014.2.1
-# for Rawhide, please always use release >= 2
-# for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 7%{?dist}
+Release: 1
 License: Public Domain
 
 Group: System Environment/Base
@@ -71,8 +69,8 @@ Requires(post): coreutils
 BuildRequires: perl
 BuildRequires: python
 BuildRequires: openssl
-BuildRequires: asciidoc
-BuildRequires: libxslt
+#BuildRequires: asciidoc
+#BuildRequires: libxslt
 
 %description
 This package contains the set of CA certificates chosen by the
@@ -186,8 +184,8 @@ popd
 
 #manpage
 cp %{SOURCE10} %{name}/update-ca-trust.8.txt
-asciidoc.py -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
-xsltproc --nonet -o %{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/update-ca-trust.8.xml
+#asciidoc.py -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
+#xsltproc --nonet -o %{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/update-ca-trust.8.xml
 
 
 %install
@@ -209,7 +207,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_mandir}/man8
 
-install -p -m 644 %{name}/update-ca-trust.8 $RPM_BUILD_ROOT%{_mandir}/man8
+#install -p -m 644 %{name}/update-ca-trust.8 $RPM_BUILD_ROOT%{_mandir}/man8
 install -p -m 644 %{SOURCE11} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/README
 install -p -m 644 %{SOURCE12} $RPM_BUILD_ROOT%{catrustdir}/README
 install -p -m 644 %{SOURCE13} $RPM_BUILD_ROOT%{catrustdir}/extracted/README
@@ -279,7 +277,7 @@ if [ $1 -gt 1 ] ; then
   #
   if ! test -e %{pkidir}/%{java_bundle}.rpmsave; then
     # no backup yet
-    if ! test -L %{pkidir}/%{java_bundle}; then
+    if test -e %{pkidir}/%{java_bundle} -a ! -L %{pkidir}/%{java_bundle}; then
       # it's an old regular file, not a link
       mv -f %{pkidir}/%{java_bundle} %{pkidir}/%{java_bundle}.rpmsave
     fi
@@ -334,7 +332,7 @@ fi
 
 %config(noreplace) %{catrustdir}/ca-legacy.conf
 
-%{_mandir}/man8/update-ca-trust.8.gz
+#%{_mandir}/man8/update-ca-trust.8.gz
 %{_datadir}/pki/ca-trust-source/README
 %{catrustdir}/README
 %{catrustdir}/extracted/README
@@ -359,7 +357,7 @@ fi
 # update/extract tool
 %{_bindir}/update-ca-trust
 %{_bindir}/ca-legacy
-%ghost %{catrustdir}/source/ca-bundle.legacy.crt
+%ghost %attr(644,-,-) %{catrustdir}/source/ca-bundle.legacy.crt
 # files extracted files
 %ghost %{catrustdir}/extracted/pem/tls-ca-bundle.pem
 %ghost %{catrustdir}/extracted/pem/email-ca-bundle.pem
