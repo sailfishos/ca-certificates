@@ -41,7 +41,7 @@ Release: 1
 License: Public Domain
 
 Group: System Environment/Base
-URL: http://www.mozilla.org/
+URL: https://fedoraproject.org/wiki/CA-Certificates
 
 #Please always update both certdata.txt and nssckbi.h
 Source0: certdata.txt
@@ -367,6 +367,9 @@ fi
 
 
 %changelog
+- Update project URL
+- Cleanup
+
 * Sat Nov 15 2014 Peter Lemenkov <lemenkov@gmail.com> - 2014.2.1-7
 - Restore Requires: coreutils
 
