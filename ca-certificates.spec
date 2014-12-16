@@ -36,10 +36,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2014.2.1
+Version: 2014.2.2
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 7%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -369,6 +369,8 @@ fi
 
 
 %changelog
+* Tue Dec 16 2014 Kai Engert <kaie@redhat.com> - 2014.2.2-2
+- Update to CKBI 2.2 from NSS 3.17.3 with legacy modifications
 - Update project URL
 - Cleanup
 
