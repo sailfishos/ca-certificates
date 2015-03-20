@@ -369,6 +369,13 @@ fi
 
 
 %changelog
+- Fixed a mistake in the legacy handling of the upstream 2.2 release:
+  Removed two AOL certificates from the legacy group, because
+  upstream didn't remove them as part of phasing out 1024-bit
+  certificates, which means it isn't necessary to keep them.
+- Fixed a mistake in the legacy handling of the upstream 2.1 release:
+  Moved two NetLock certificates into the legacy group.
+
 * Tue Dec 16 2014 Kai Engert <kaie@redhat.com> - 2014.2.2-2
 - Update to CKBI 2.2 from NSS 3.17.3 with legacy modifications
 - Update project URL
