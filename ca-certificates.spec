@@ -36,7 +36,7 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2014.2.2
+Version: 2015.2.3
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
 Release: 2%{?dist}
@@ -369,6 +369,8 @@ fi
 
 
 %changelog
+* Fri Mar 20 2015 Kai Engert <kaie@redhat.com> - 2015.2.3-2
+- Update to CKBI 2.3 from NSS 3.18 with legacy modifications
 - Fixed a mistake in the legacy handling of the upstream 2.2 release:
   Removed two AOL certificates from the legacy group, because
   upstream didn't remove them as part of phasing out 1024-bit
