@@ -2,7 +2,7 @@
 %define catrustdir %{_sysconfdir}/pki/ca-trust
 %define classic_tls_bundle ca-bundle.crt
 %define trusted_all_bundle ca-bundle.trust.crt
-%define legacy_enable_bundle ca-bundle.legacy.enable.crt
+%define legacy_default_bundle ca-bundle.legacy.default.crt
 %define legacy_disable_bundle ca-bundle.legacy.disable.crt
 %define neutral_bundle ca-bundle.neutral-trust.crt
 %define bundle_supplement ca-bundle.supplement.p11-kit
@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2015.2.3
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -53,6 +53,7 @@ Source3: trust-fixes
 Source4: certdata2pem.py
 Source5: ca-legacy.conf
 Source6: ca-legacy
+Source9: ca-legacy.8.txt
 Source10: update-ca-trust.8.txt
 Source11: README.usr
 Source12: README.etc
@@ -82,7 +83,7 @@ Mozilla Foundation for use with the Internet PKI.
 rm -rf %{name}
 mkdir %{name}
 mkdir %{name}/certs
-mkdir %{name}/certs/legacy-enable
+mkdir %{name}/certs/legacy-default
 mkdir %{name}/certs/legacy-disable
 mkdir %{name}/java
 
@@ -142,7 +143,7 @@ EOF
    fi
  done
 
- for f in certs/legacy-enable/*.crt; do 
+ for f in certs/legacy-default/*.crt; do 
    echo "processing $f"
    tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
    alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
@@ -153,8 +154,8 @@ EOF
       done
    fi
    if [ -n "$targs" ]; then
-      echo "legacy enable flags $targs for $f" >> info.trust
-      openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_enable_bundle}
+      echo "legacy default flags $targs for $f" >> info.trust
+      openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_default_bundle}
    fi
  done
 
@@ -189,6 +190,10 @@ cp %{SOURCE10} %{name}/update-ca-trust.8.txt
 asciidoc.py -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
 xsltproc --nonet -o %{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/update-ca-trust.8.xml
 
+cp %{SOURCE9} %{name}/ca-legacy.8.txt
+asciidoc.py -v -d manpage -b docbook %{name}/ca-legacy.8.txt
+xsltproc --nonet -o %{name}/ca-legacy.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/ca-legacy.8.xml
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -210,6 +215,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_mandir}/man8
 
 install -p -m 644 %{name}/update-ca-trust.8 $RPM_BUILD_ROOT%{_mandir}/man8
+install -p -m 644 %{name}/ca-legacy.8 $RPM_BUILD_ROOT%{_mandir}/man8
 install -p -m 644 %{SOURCE11} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/README
 install -p -m 644 %{SOURCE12} $RPM_BUILD_ROOT%{catrustdir}/README
 install -p -m 644 %{SOURCE13} $RPM_BUILD_ROOT%{catrustdir}/extracted/README
@@ -222,7 +228,7 @@ install -p -m 644 %{name}/%{trusted_all_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/c
 install -p -m 644 %{name}/%{neutral_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{neutral_bundle}
 install -p -m 644 %{name}/%{bundle_supplement} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{bundle_supplement}
 
-install -p -m 644 %{name}/%{legacy_enable_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_enable_bundle}
+install -p -m 644 %{name}/%{legacy_default_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_default_bundle}
 install -p -m 644 %{name}/%{legacy_disable_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_disable_bundle}
 
 install -p -m 644 %{SOURCE5} $RPM_BUILD_ROOT%{catrustdir}/ca-legacy.conf
@@ -231,7 +237,7 @@ touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{trusted_all
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{neutral_bundle}
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{bundle_supplement}
 
-touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_enable_bundle}
+touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_default_bundle}
 touch -r %{SOURCE0} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy/%{legacy_disable_bundle}
 
 # TODO: consider to dynamically create the update-ca-trust script from within
@@ -335,6 +341,7 @@ fi
 %config(noreplace) %{catrustdir}/ca-legacy.conf
 
 %{_mandir}/man8/update-ca-trust.8.gz
+%{_mandir}/man8/ca-legacy.8.gz
 %{_datadir}/pki/ca-trust-source/README
 %{catrustdir}/README
 %{catrustdir}/extracted/README
@@ -354,7 +361,7 @@ fi
 %{_datadir}/pki/ca-trust-source/%{trusted_all_bundle}
 %{_datadir}/pki/ca-trust-source/%{neutral_bundle}
 %{_datadir}/pki/ca-trust-source/%{bundle_supplement}
-%{_datadir}/pki/ca-trust-legacy/%{legacy_enable_bundle}
+%{_datadir}/pki/ca-trust-legacy/%{legacy_default_bundle}
 %{_datadir}/pki/ca-trust-legacy/%{legacy_disable_bundle}
 # update/extract tool
 %{_bindir}/update-ca-trust
@@ -369,6 +376,17 @@ fi
 
 
 %changelog
+* Tue Mar 31 2015 Kai Engert <kaie@redhat.com> - 2015.2.3-3
+- Don't use "enable" as a value for the legacy configuration, instead
+  of the value "default", to make it clear that this preference isn't
+  a promise to keep certificates enabled, but rather that we only
+  keep them enabled as long as it's considered necessary.
+- Changed the configuration file, the ca-legacy utility and filenames
+  to use the term "default" (instead of the term "enable").
+- Added a manual page for the ca-legacy utility.
+- Fixed the ca-legacy utility to handle absence of the configuration
+  setting and treat absence as the default setting.
+
 * Fri Mar 20 2015 Kai Engert <kaie@redhat.com> - 2015.2.3-2
 - Update to CKBI 2.3 from NSS 3.18 with legacy modifications
 - Fixed a mistake in the legacy handling of the upstream 2.2 release:

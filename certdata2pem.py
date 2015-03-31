@@ -196,7 +196,7 @@ for tobj in objects:
             is_legacy = 1
             if obj == None:
                 raise NotImplementedError, 'found legacy trust without certificate.\n' + line
-            legacy_fname = "legacy-enable/" + fname
+            legacy_fname = "legacy-default/" + fname
             f = open(legacy_fname, 'w')
             f.write("# alias=%s\n"%tobj['CKA_LABEL'])
             f.write("# trust=" + " ".join(legacy_trustbits) + "\n")
