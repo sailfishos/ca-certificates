@@ -59,6 +59,9 @@ Source14: README.java
 Source15: README.openssl
 Source16: README.pem
 Source17: README.src
+Source18: fetch.sh
+Source19: README
+Source20: sources
 
 BuildArch: noarch
 
