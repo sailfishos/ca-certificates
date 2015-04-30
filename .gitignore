@@ -1,0 +1,5 @@
+*.rpm
+noarch
+clog
+/.*build.log
+/ca-certificates
