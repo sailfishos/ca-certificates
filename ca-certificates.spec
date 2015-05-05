@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2015.2.3
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -376,6 +376,9 @@ fi
 
 
 %changelog
+* Tue May 05 2015 Kai Engert <kaie@redhat.com> - 2015.2.3-4
+- Fixed a typo in the ca-legacy manual page.
+
 * Tue Mar 31 2015 Kai Engert <kaie@redhat.com> - 2015.2.3-3
 - Don't use "enable" as a value for the legacy configuration, instead
   of the value "default", to make it clear that this preference isn't
