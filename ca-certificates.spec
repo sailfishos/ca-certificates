@@ -36,10 +36,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2015.2.4
+Version: 2015.2.5
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -376,6 +376,9 @@ fi
 
 
 %changelog
+* Thu Aug 13 2015 Kai Engert <kaie@redhat.com> - 2015.2.5-2
+- Update to CKBI 2.5 from NSS 3.19.3 with legacy modifications
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.2.4-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
