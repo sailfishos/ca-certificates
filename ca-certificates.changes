@@ -1,3 +1,6 @@
+* Wed Aug 26 2015 Pasi Sjöholm <pasi.sjoholm@jollamobile.com> - 2014.2.1-2
+- Remove perl from BuildRequires. MER#1271
+
 * Fri May 01 2015 Pasi Sjöholm <pasi.sjoholm@jollamobile.com> - 2014.2.1-1
 - Update to latest upstream ca-certificates and use p11-kit. MER#948
 
