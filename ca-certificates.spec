@@ -37,7 +37,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2014.2.1
-Release: 1
+Release: 2
 License: Public Domain
 
 Group: System Environment/Base
@@ -69,7 +69,6 @@ Requires: p11-kit >= 0.19.2
 Requires: p11-kit-trust >= 0.19.2
 Requires: coreutils
 Requires(post): coreutils
-BuildRequires: perl
 BuildRequires: python
 BuildRequires: openssl
 #BuildRequires: asciidoc
