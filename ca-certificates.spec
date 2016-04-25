@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2016.2.7
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -376,6 +376,9 @@ fi
 
 
 %changelog
+* Mon Apr 25 2016 Kai Engert <kaie@redhat.com> - 2016.2.7-3
+- Fix typos in a manual page and in a README file.
+
 * Wed Mar 16 2016 Kai Engert <kaie@redhat.com> - 2016.2.7-2
 - Update to CKBI 2.7 from NSS 3.23 with legacy modifications
 
