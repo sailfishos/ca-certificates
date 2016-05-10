@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2016.2.7
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -67,8 +67,6 @@ BuildArch: noarch
 
 Requires: p11-kit >= 0.19.2
 Requires: p11-kit-trust >= 0.19.2
-Requires: coreutils
-Requires(post): coreutils
 BuildRequires: perl
 BuildRequires: python
 BuildRequires: openssl
@@ -254,18 +252,17 @@ touch $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{trusted_all_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 
 # /etc/ssl/certs symlink for 3rd-party tools
-ln -s ../pki/tls/certs \
-      $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
+sln ../pki/tls/certs \
+    $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
 # legacy filenames
-ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
-      $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
-ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
-      $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
-ln -s %{catrustdir}/extracted/openssl/%{trusted_all_bundle} \
-      $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{trusted_all_bundle}
-ln -s %{catrustdir}/extracted/%{java_bundle} \
-      $RPM_BUILD_ROOT%{pkidir}/%{java_bundle}
-
+sln %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+    $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
+sln %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+    $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
+sln %{catrustdir}/extracted/openssl/%{trusted_all_bundle} \
+    $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{trusted_all_bundle}
+sln %{catrustdir}/extracted/%{java_bundle} \
+    $RPM_BUILD_ROOT%{pkidir}/%{java_bundle}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -376,6 +373,9 @@ fi
 
 
 %changelog
+* Tue May 10 2016 Kai Engert <kaie@redhat.com> - 2016.2.7-4
+- Use sln, not ln, to avoid the dependency on coreutils.
+
 * Mon Apr 25 2016 Kai Engert <kaie@redhat.com> - 2016.2.7-3
 - Fix typos in a manual page and in a README file.
 
