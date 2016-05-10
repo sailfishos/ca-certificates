@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2016.2.7
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -282,25 +282,34 @@ if [ $1 -gt 1 ] ; then
   #
   if ! test -e %{pkidir}/%{java_bundle}.rpmsave; then
     # no backup yet
-    if ! test -L %{pkidir}/%{java_bundle}; then
-      # it's an old regular file, not a link
-      mv -f %{pkidir}/%{java_bundle} %{pkidir}/%{java_bundle}.rpmsave
+    if test -e %{pkidir}/%{java_bundle}; then
+      # a file exists
+        if ! test -L %{pkidir}/%{java_bundle}; then
+        # it's an old regular file, not a link
+        mv -f %{pkidir}/%{java_bundle} %{pkidir}/%{java_bundle}.rpmsave
+      fi
     fi
   fi
 
   if ! test -e %{pkidir}/tls/certs/%{classic_tls_bundle}.rpmsave; then
     # no backup yet
-    if ! test -L %{pkidir}/tls/certs/%{classic_tls_bundle}; then
-      # it's an old regular file, not a link
-      mv -f %{pkidir}/tls/certs/%{classic_tls_bundle} %{pkidir}/tls/certs/%{classic_tls_bundle}.rpmsave
+    if test -e %{pkidir}/tls/certs/%{classic_tls_bundle}; then
+      # a file exists
+      if ! test -L %{pkidir}/tls/certs/%{classic_tls_bundle}; then
+        # it's an old regular file, not a link
+        mv -f %{pkidir}/tls/certs/%{classic_tls_bundle} %{pkidir}/tls/certs/%{classic_tls_bundle}.rpmsave
+      fi
     fi
   fi
 
   if ! test -e %{pkidir}/tls/certs/%{trusted_all_bundle}.rpmsave; then
     # no backup yet
-    if ! test -L %{pkidir}/tls/certs/%{trusted_all_bundle}; then
-      # it's an old regular file, not a link
-      mv -f %{pkidir}/tls/certs/%{trusted_all_bundle} %{pkidir}/tls/certs/%{trusted_all_bundle}.rpmsave
+    if test -e %{pkidir}/tls/certs/%{trusted_all_bundle}; then
+      # a file exists
+      if ! test -L %{pkidir}/tls/certs/%{trusted_all_bundle}; then
+        # it's an old regular file, not a link
+        mv -f %{pkidir}/tls/certs/%{trusted_all_bundle} %{pkidir}/tls/certs/%{trusted_all_bundle}.rpmsave
+      fi
     fi
   fi
 fi
@@ -373,6 +382,9 @@ fi
 
 
 %changelog
+* Tue May 10 2016 Kai Engert <kaie@redhat.com> - 2016.2.7-5
+- Only create backup files if there is an original file (bug 999017).
+
 * Tue May 10 2016 Kai Engert <kaie@redhat.com> - 2016.2.7-4
 - Use sln, not ln, to avoid the dependency on coreutils.
 
