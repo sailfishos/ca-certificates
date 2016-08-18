@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2016.2.9
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -141,37 +141,45 @@ EOF
    fi
  done
 
- for f in certs/legacy-default/*.crt; do 
-   echo "processing $f"
-   tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
-   alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
-   targs=""
-   if [ -n "$tbits" ]; then
-      for t in $tbits; do
-         targs="${targs} -addtrust $t"
-      done
-   fi
-   if [ -n "$targs" ]; then
-      echo "legacy default flags $targs for $f" >> info.trust
-      openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_default_bundle}
-   fi
- done
+ touch %{legacy_default_bundle}
+ NUM_LEGACY_DEFAULT=`find certs/legacy-default -type f | wc -l`
+ if [ $NUM_LEGACY_DEFAULT -ne 0 ]; then
+     for f in certs/legacy-default/*.crt; do 
+       echo "processing $f"
+       tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
+       alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
+       targs=""
+       if [ -n "$tbits" ]; then
+          for t in $tbits; do
+             targs="${targs} -addtrust $t"
+          done
+       fi
+       if [ -n "$targs" ]; then
+          echo "legacy default flags $targs for $f" >> info.trust
+          openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_default_bundle}
+       fi
+     done
+ fi
 
- for f in certs/legacy-disable/*.crt; do 
-   echo "processing $f"
-   tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
-   alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
-   targs=""
-   if [ -n "$tbits" ]; then
-      for t in $tbits; do
-         targs="${targs} -addtrust $t"
-      done
-   fi
-   if [ -n "$targs" ]; then
-      echo "legacy disable flags $targs for $f" >> info.trust
-      openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_disable_bundle}
-   fi
- done
+ touch %{legacy_disable_bundle}
+ NUM_LEGACY_DISABLE=`find certs/legacy-disable -type f | wc -l`
+ if [ $NUM_LEGACY_DISABLE -ne 0 ]; then
+     for f in certs/legacy-disable/*.crt; do 
+       echo "processing $f"
+       tbits=`sed -n '/^# openssl-trust/{s/^.*=//;p;}' $f`
+       alias=`sed -n '/^# alias=/{s/^.*=//;p;q;}' $f | sed "s/'//g" | sed 's/"//g'`
+       targs=""
+       if [ -n "$tbits" ]; then
+          for t in $tbits; do
+             targs="${targs} -addtrust $t"
+          done
+       fi
+       if [ -n "$targs" ]; then
+          echo "legacy disable flags $targs for $f" >> info.trust
+          openssl x509 -text -in "$f" -trustout $targs -setalias "$alias" >> %{legacy_disable_bundle}
+       fi
+     done
+ fi
 
  P11FILES=`find certs -name *.p11-kit | wc -l`
  if [ $P11FILES -ne 0 ]; then
@@ -382,6 +390,11 @@ fi
 
 
 %changelog
+* Tue Aug 16 2016 Kai Engert <kaie@redhat.com> - 2016.2.9-3
+- Revert to the unmodified upstream CA list, changing the legacy trust
+  to an empty list. Keeping the ca-legacy tool and existing config,
+  however, the configuration has no effect after this change.
+
 * Tue Aug 16 2016 Kai Engert <kaie@redhat.com> - 2016.2.9-2
 - Update to CKBI 2.9 from NSS 3.26 with legacy modifications
 
