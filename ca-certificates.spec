@@ -36,10 +36,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2016.2.9
+Version: 2016.2.10
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -390,6 +390,9 @@ fi
 
 
 %changelog
+* Fri Sep 29 2016 Kai Engert <kaie@redhat.com> - 2016.2.10-2
+- Update to CKBI 2.10 from NSS 3.27
+
 * Tue Aug 16 2016 Kai Engert <kaie@redhat.com> - 2016.2.9-3
 - Revert to the unmodified upstream CA list, changing the legacy trust
   to an empty list. Keeping the ca-legacy tool and existing config,
