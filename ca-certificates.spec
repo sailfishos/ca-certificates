@@ -36,7 +36,7 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2016.2.10
+Version: 2017.2.11
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
 Release: 2%{?dist}
@@ -390,6 +390,9 @@ fi
 
 
 %changelog
+* Wed Jan 11 2017 Kai Engert <kaie@redhat.com> - 2017.2.11-2
+- Update to CKBI 2.11 from NSS 3.28.1
+
 * Fri Sep 29 2016 Kai Engert <kaie@redhat.com> - 2016.2.10-2
 - Update to CKBI 2.10 from NSS 3.27
 
