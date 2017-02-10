@@ -39,7 +39,7 @@ Name: ca-certificates
 Version: 2017.2.11
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -390,6 +390,9 @@ fi
 
 
 %changelog
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2017.2.11-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Wed Jan 11 2017 Kai Engert <kaie@redhat.com> - 2017.2.11-2
 - Update to CKBI 2.11 from NSS 3.28.1
 
