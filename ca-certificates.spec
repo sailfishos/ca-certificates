@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2017.2.11
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -64,8 +64,8 @@ Source17: README.src
 
 BuildArch: noarch
 
-Requires: p11-kit >= 0.19.2
-Requires: p11-kit-trust >= 0.19.2
+Requires: p11-kit >= 0.23.4
+Requires: p11-kit-trust >= 0.23.4
 BuildRequires: perl
 BuildRequires: python
 BuildRequires: openssl
@@ -352,6 +352,11 @@ fi
 
 
 %changelog
+* Thu Feb 23 2017 Kai Engert <kaie@redhat.com> - 2017.2.11-5
+- For CAs trusted by Mozilla, set attribute nss-mozilla-ca-policy: true
+- Set attribute modifiable: false
+- Require p11-kit 0.23.4
+
 * Mon Feb 13 2017 Kai Engert <kaie@redhat.com> - 2017.2.11-4
 - Changed the packaged bundle to use the flexible p11-kit-object-v1 file format,
   as a preparation to fix bugs in the interaction between p11-kit-trust and

@@ -122,6 +122,7 @@ def write_cert_ext_to_file(f, oid, value, public_key):
     f.write("class: x-certificate-extension\n");
     f.write("object-id: " + oid + "\n")
     f.write("value: \"" + value + "\"\n")
+    f.write("modifiable: false\n");
     f.write(public_key)
 
 trust_types = {
@@ -346,8 +347,9 @@ for tobj in objects:
             else:
                 f.write("trusted: false\n")
 
-            # enable the following line, after we have upgraded p11-kit-trust
-            # f.write("nss-mozilla-ca-policy: true\n")
+            # requires p11-kit >= 0.23.4
+            f.write("nss-mozilla-ca-policy: true\n")
+            f.write("modifiable: false\n");
 
             f.write("-----BEGIN CERTIFICATE-----\n")
             f.write("\n".join(textwrap.wrap(base64.b64encode(obj['CKA_VALUE']), 64)))
@@ -362,6 +364,7 @@ for tobj in objects:
             f.write("\n")
             f.write("class: certificate\n")
             f.write("certificate-type: x-509\n")
+            f.write("modifiable: false\n");
             f.write("issuer: \"");
             f.write(urllib.quote(tobj['CKA_ISSUER']));
             f.write("\"\n")
