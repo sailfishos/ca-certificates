@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2017.2.11
+Version: 2017.2.14
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 5%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -352,6 +352,9 @@ fi
 
 
 %changelog
+* Wed Apr 26 2017 Kai Engert <kaie@redhat.com> - 2017.2.14-2
+- Update to CKBI 2.14 from NSS 3.30.2
+
 * Thu Feb 23 2017 Kai Engert <kaie@redhat.com> - 2017.2.11-5
 - For CAs trusted by Mozilla, set attribute nss-mozilla-ca-policy: true
 - Set attribute modifiable: false
