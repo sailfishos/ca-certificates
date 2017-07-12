@@ -66,7 +66,7 @@ BuildArch: noarch
 
 Requires: p11-kit >= 0.23.4
 Requires: p11-kit-trust >= 0.23.4
-BuildRequires: perl
+BuildRequires: perl-interpreter
 BuildRequires: python
 BuildRequires: openssl
 BuildRequires: asciidoc
