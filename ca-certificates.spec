@@ -35,7 +35,7 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2017.2.14
+Version: 2017.2.16
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
 Release: 2%{?dist}
@@ -352,6 +352,10 @@ fi
 
 
 %changelog
+* Wed Jul 19 2017 Kai Engert <kaie@redhat.com> - 2017.2.16-2
+- Update to (yet unreleased) CKBI 2.16 which is planned for NSS 3.32.
+  Mozilla removed all trust bits for code signing.
+
 * Wed Apr 26 2017 Kai Engert <kaie@redhat.com> - 2017.2.14-2
 - Update to CKBI 2.14 from NSS 3.30.2
 
