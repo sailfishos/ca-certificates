@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2017.2.16
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -352,6 +352,10 @@ fi
 
 
 %changelog
+* Tue Aug 15 2017 Kai Engert <kaie@redhat.com> - 2017.2.16-3
+- Set P11_KIT_NO_USER_CONFIG=1 to prevent p11-kit from reading user
+  configuration files (rhbz#1478172).
+
 * Wed Jul 19 2017 Kai Engert <kaie@redhat.com> - 2017.2.16-2
 - Update to (yet unreleased) CKBI 2.16 which is planned for NSS 3.32.
   Mozilla removed all trust bits for code signing.
