@@ -1,0 +1,13 @@
+---
+# This first play always runs on the local staging system
+- hosts: localhost
+  roles:
+  - role: standard-test-beakerlib
+    tags:
+    - atomic
+    - classic
+    - container
+    tests:
+    - smoke-test
+    required_packages:
+    - findutils         # beakerlib needs find command
