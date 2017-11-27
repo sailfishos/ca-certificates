@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2017.2.16
+Version: 2017.2.20
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -352,6 +352,9 @@ fi
 
 
 %changelog
+* Mon Nov 27 2017 Kai Engert <kaie@redhat.com> - 2017.2.20-2
+- Update to CKBI 2.20 from NSS 3.34.1
+
 * Tue Aug 15 2017 Kai Engert <kaie@redhat.com> - 2017.2.16-4
 - Set P11_KIT_NO_USER_CONFIG=1 to prevent p11-kit from reading user
   configuration files (rhbz#1478172).
