@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2017.2.20
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -352,6 +352,9 @@ fi
 
 
 %changelog
+* Fri Jan 19 2018 Kai Engert <kaie@redhat.com> - 2017.2.20-4
+- stop using sln in ca-legacy script.
+
 * Fri Jan 19 2018 Kai Engert <kaie@redhat.com> - 2017.2.20-3
 - Use ln -s, because sln was removed from glibc. rhbz#1536349
 
