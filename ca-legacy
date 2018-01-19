@@ -32,10 +32,10 @@ do_install()
     is_disabled
     if [ $? -eq 0 ]; then
         # found, legacy is disabled
-        ln -s $LDISABLE $LLINK
+        ln -sf $LDISABLE $LLINK
     else
         # expression not found, legacy is set to default
-        ln -s $LDEFAULT $LLINK
+        ln -sf $LDEFAULT $LLINK
     fi
 }
 
