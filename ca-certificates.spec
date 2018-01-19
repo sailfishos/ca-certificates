@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2017.2.20
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -222,16 +222,16 @@ touch $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{openssl_format_trust_bund
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 
 # /etc/ssl/certs symlink for 3rd-party tools
-sln ../pki/tls/certs \
+ln -s ../pki/tls/certs \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
 # legacy filenames
-sln %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
-sln %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
-sln %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle} \
+ln -s %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle} \
     $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{openssl_format_trust_bundle}
-sln %{catrustdir}/extracted/%{java_bundle} \
+ln -s %{catrustdir}/extracted/%{java_bundle} \
     $RPM_BUILD_ROOT%{pkidir}/%{java_bundle}
 
 %clean
@@ -352,6 +352,9 @@ fi
 
 
 %changelog
+* Fri Jan 19 2018 Kai Engert <kaie@redhat.com> - 2017.2.20-3
+- Use ln -s, because sln was removed from glibc. rhbz#1536349
+
 * Mon Nov 27 2017 Kai Engert <kaie@redhat.com> - 2017.2.20-2
 - Update to CKBI 2.20 from NSS 3.34.1
 
