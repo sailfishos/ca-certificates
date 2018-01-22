@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2017.2.20
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -64,8 +64,17 @@ Source17: README.src
 
 BuildArch: noarch
 
+Requires(post): bash
+Requires(post): grep
+Requires(post): sed
+Requires: bash
+Requires: grep
+Requires: sed
+Requires(post): p11-kit >= 0.23.4
+Requires(post): p11-kit-trust >= 0.23.4
 Requires: p11-kit >= 0.23.4
 Requires: p11-kit-trust >= 0.23.4
+
 BuildRequires: perl-interpreter
 BuildRequires: python
 BuildRequires: openssl
@@ -352,6 +361,10 @@ fi
 
 
 %changelog
+* Mon Jan 22 2018 Kai Engert <kaie@redhat.com> - 2017.2.20-6
+- Depend on bash, grep, sed. Required for ca-legacy script execution.
+- p11-kit is already required at %%post execution time. (rhbz#1537127)
+
 * Fri Jan 19 2018 Kai Engert <kaie@redhat.com> - 2017.2.20-5
 - Use the force, script! (Which sln did by default).
 
