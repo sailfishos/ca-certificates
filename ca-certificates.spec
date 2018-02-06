@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2017.2.20
+Version: 2018.2.22
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 6%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -361,6 +361,9 @@ fi
 
 
 %changelog
+* Tue Feb 06 2018 Kai Engert <kaie@redhat.com> - 2018.2.22-2
+- Update to CKBI 2.22 from NSS 3.35
+
 * Mon Jan 22 2018 Kai Engert <kaie@redhat.com> - 2017.2.20-6
 - Depend on bash, grep, sed. Required for ca-legacy script execution.
 - p11-kit is already required at %%post execution time. (rhbz#1537127)
