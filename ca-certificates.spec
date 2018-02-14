@@ -243,9 +243,6 @@ ln -s %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle} \
 ln -s %{catrustdir}/extracted/%{java_bundle} \
     $RPM_BUILD_ROOT%{pkidir}/%{java_bundle}
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 
 %pre
 if [ $1 -gt 1 ] ; then
