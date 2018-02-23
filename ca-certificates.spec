@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2018.2.22
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -67,6 +67,7 @@ BuildArch: noarch
 Requires(post): bash
 Requires(post): grep
 Requires(post): sed
+Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
@@ -358,6 +359,9 @@ fi
 
 
 %changelog
+* Fri Feb 23 2018 Patrick Uiterwijk <puiterwijk@redhat.com> - 2018.2.22-3
+- Add post dep on coreutils for ln(1)
+
 * Tue Feb 06 2018 Kai Engert <kaie@redhat.com> - 2018.2.22-2
 - Update to CKBI 2.22 from NSS 3.35
 
