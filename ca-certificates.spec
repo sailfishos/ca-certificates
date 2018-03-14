@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2018.2.22
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -77,7 +77,7 @@ Requires: p11-kit >= 0.23.4
 Requires: p11-kit-trust >= 0.23.4
 
 BuildRequires: perl-interpreter
-BuildRequires: python
+BuildRequires: python2
 BuildRequires: openssl
 BuildRequires: asciidoc
 BuildRequires: libxslt
@@ -359,6 +359,10 @@ fi
 
 
 %changelog
+* Wed Mar 14 2018 Iryna Shcherbina <ishcherb@redhat.com> - 2018.2.22-4
+- Update Python 2 dependency declarations to new packaging standards
+  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
+
 * Fri Feb 23 2018 Patrick Uiterwijk <puiterwijk@redhat.com> - 2018.2.22-3
 - Add post dep on coreutils for ln(1)
 
