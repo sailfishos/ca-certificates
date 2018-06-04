@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2018.2.24
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -225,11 +225,17 @@ install -p -m 755 %{SOURCE2} $RPM_BUILD_ROOT%{_bindir}/update-ca-trust
 install -p -m 755 %{SOURCE6} $RPM_BUILD_ROOT%{_bindir}/ca-legacy
 
 # touch ghosted files that will be extracted dynamically
+# Set chmod 444 to use identical permission
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/tls-ca-bundle.pem
+chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/tls-ca-bundle.pem
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/email-ca-bundle.pem
+chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/email-ca-bundle.pem
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/objsign-ca-bundle.pem
+chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/objsign-ca-bundle.pem
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle}
+chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
+chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 
 # /etc/ssl/certs symlink for 3rd-party tools
 ln -s ../pki/tls/certs \
@@ -359,6 +365,9 @@ fi
 
 
 %changelog
+* Mon Jun 04 2018 Kai Engert <kaie@redhat.com> - 2018.2.24-3
+- Adjust ghost file permissions, rhbz#1564432
+
 * Fri May 18 2018 Kai Engert <kaie@redhat.com> - 2018.2.24-2
 - Update to CKBI 2.24 from NSS 3.37
 
