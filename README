@@ -1,7 +1,7 @@
 This packaging is based directly on the Fedora ca-certificates package.
 The repository:
 
-    git://pkgs.fedoraproject.org/ca-certificates.git
+    https://src.fedoraproject.org/rpms/ca-certificates.git
 
 is considered to be the upstream for this package, and changes to it should
 be marked with '[mer]'. To update, simply merge from that remote.
