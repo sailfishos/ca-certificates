@@ -174,8 +174,8 @@ cp %{SOURCE10} %{name}/update-ca-trust.8.txt
 #xsltproc --nonet -o %{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/update-ca-trust.8.xml
 
 cp %{SOURCE9} %{name}/ca-legacy.8.txt
-asciidoc.py -v -d manpage -b docbook %{name}/ca-legacy.8.txt
-xsltproc --nonet -o %{name}/ca-legacy.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/ca-legacy.8.xml
+#asciidoc.py -v -d manpage -b docbook %{name}/ca-legacy.8.txt
+#xsltproc --nonet -o %{name}/ca-legacy.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/ca-legacy.8.xml
 
 
 %install
@@ -330,8 +330,8 @@ fi
 
 %config(noreplace) %{catrustdir}/ca-legacy.conf
 
-#%{_mandir}/man8/update-ca-trust.8.gz
-#%{_mandir}/man8/ca-legacy.8.gz
+#% {_mandir}/man8/update-ca-trust.8.gz
+#% {_mandir}/man8/ca-legacy.8.gz
 %{_datadir}/pki/ca-trust-source/README
 %{catrustdir}/README
 %{catrustdir}/extracted/README
