@@ -72,10 +72,10 @@ Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.23.4
-Requires(post): p11-kit-trust >= 0.23.4
-Requires: p11-kit >= 0.23.4
-Requires: p11-kit-trust >= 0.23.4
+Requires(post): p11-kit >= 0.23.10
+Requires(post): p11-kit-trust >= 0.23.10
+Requires: p11-kit >= 0.23.10
+Requires: p11-kit-trust >= 0.23.10
 
 BuildRequires: perl-interpreter
 BuildRequires: python2
