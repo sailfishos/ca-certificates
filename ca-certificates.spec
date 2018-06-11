@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2018.2.24
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -60,7 +60,8 @@ Source13: README.extr
 Source14: README.java
 Source15: README.openssl
 Source16: README.pem
-Source17: README.src
+Source17: README.edk2
+Source18: README.src
 
 BuildArch: noarch
 
@@ -189,6 +190,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
@@ -204,7 +206,8 @@ install -p -m 644 %{SOURCE13} $RPM_BUILD_ROOT%{catrustdir}/extracted/README
 install -p -m 644 %{SOURCE14} $RPM_BUILD_ROOT%{catrustdir}/extracted/java/README
 install -p -m 644 %{SOURCE15} $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/README
 install -p -m 644 %{SOURCE16} $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/README
-install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/source/README
+install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/README
+install -p -m 644 %{SOURCE18} $RPM_BUILD_ROOT%{catrustdir}/source/README
 
 install -p -m 644 %{name}/%{p11_format_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{p11_format_bundle}
 
@@ -236,6 +239,8 @@ touch $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{openssl_format_trust_bund
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
+touch $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
+chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 
 # /etc/ssl/certs symlink for 3rd-party tools
 ln -s ../pki/tls/certs \
@@ -337,6 +342,7 @@ fi
 %{catrustdir}/extracted/java/README
 %{catrustdir}/extracted/openssl/README
 %{catrustdir}/extracted/pem/README
+%{catrustdir}/extracted/edk2/README
 %{catrustdir}/source/README
 
 # symlinks for old locations
@@ -362,9 +368,13 @@ fi
 %ghost %{catrustdir}/extracted/pem/objsign-ca-bundle.pem
 %ghost %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle}
 %ghost %{catrustdir}/extracted/%{java_bundle}
+%ghost %{catrustdir}/extracted/edk2/cacerts.bin
 
 
 %changelog
+* Mon Jun 11 2018 Daiki Ueno <dueno@redhat.com> - 2018.2.24-4
+- Extract certificate bundle in EDK2 format, suggested by Laszlo Ersek
+
 * Mon Jun 04 2018 Kai Engert <kaie@redhat.com> - 2018.2.24-3
 - Adjust ghost file permissions, rhbz#1564432
 
