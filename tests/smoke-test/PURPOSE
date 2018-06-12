@@ -1,0 +1,3 @@
+PURPOSE of /CoreOS/ca-certificates/Sanity/smoke-test
+Description: Check presence of Verisign root.
+Author: Ondrej Moris <omoris@redhat.com>

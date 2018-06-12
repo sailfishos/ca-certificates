@@ -192,7 +192,7 @@ or distrusted certificates, including the associated trust flags.
 
 The directory /etc/pki/ca-trust/extracted/pem/ contains 
 CA certificate bundle files in the simple BEGIN/END CERTIFICATE file format, 
-as decribed in the x509(1) manual page.
+as described in the x509(1) manual page.
 Distrust information cannot be represented in this file format,
 and distrusted certificates are missing from these files.
 File tls-ca-bundle.pem contains CA certificates 
