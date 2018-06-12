@@ -1,3 +1,6 @@
+* Tue Jun 12 2018 Pekka Vuorela <pekka.vuorela@jolla.com> - 2018.2.24-2
+- Update to latest upstream ca-certificates. Fixes JB#36223
+
 * Wed Aug 26 2015 Pasi Sjöholm <pasi.sjoholm@jollamobile.com> - 2014.2.1-2
 - Remove perl from BuildRequires. MER#1271
 
