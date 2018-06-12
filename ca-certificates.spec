@@ -62,6 +62,7 @@ Source17: README.src
 Source18: fetch.sh
 Source19: README
 Source20: sources
+Source21: sort-blocks.py
 
 BuildArch: noarch
 
