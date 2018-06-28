@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2018.2.24
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -78,7 +78,7 @@ Requires: p11-kit >= 0.23.10
 Requires: p11-kit-trust >= 0.23.10
 
 BuildRequires: perl-interpreter
-BuildRequires: python2
+BuildRequires: python3
 BuildRequires: openssl
 BuildRequires: asciidoc
 BuildRequires: libxslt
@@ -99,7 +99,7 @@ mkdir %{name}/java
 pushd %{name}/certs
  pwd
  cp %{SOURCE0} .
- python %{SOURCE4} >c2p.log 2>c2p.err
+ python3 %{SOURCE4} >c2p.log 2>c2p.err
 popd
 pushd %{name}
  (
@@ -372,6 +372,9 @@ fi
 
 
 %changelog
+* Thu Jun 28 2018 Kai Engert <kaie@redhat.com> - 2018.2.24-5
+- Ported scripts to python3
+
 * Mon Jun 11 2018 Daiki Ueno <dueno@redhat.com> - 2018.2.24-4
 - Extract certificate bundle in EDK2 format, suggested by Laszlo Ersek
 
