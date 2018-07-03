@@ -312,8 +312,6 @@ fi
 
 
 %files
-%defattr(-,root,root,-)
-
 %dir %{_sysconfdir}/ssl
 %dir %{pkidir}/tls
 %dir %{pkidir}/tls/certs
