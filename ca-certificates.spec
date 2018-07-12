@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2018.2.24
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -370,6 +370,9 @@ fi
 
 
 %changelog
+* Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2018.2.24-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
 * Thu Jun 28 2018 Kai Engert <kaie@redhat.com> - 2018.2.24-5
 - Ported scripts to python3
 
