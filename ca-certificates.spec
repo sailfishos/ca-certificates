@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2018.2.24
-# for Rawhide, please always use release >= 2
+Version: 2018.2.26
+6 for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 6%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 Group: System Environment/Base
@@ -370,6 +370,9 @@ fi
 
 
 %changelog
+* Mon Sep 24 2018 Bob Relyea <rrelyea@redhat.com> - 2018.2.26-2
+- Update to CKBI 2.26 from NSS 3.39
+
 * Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2018.2.24-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
