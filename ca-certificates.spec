@@ -36,7 +36,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2018.2.26
-6 for Rawhide, please always use release >= 2
+# for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
 Release: 2%{?dist}
 License: Public Domain
