@@ -41,7 +41,6 @@ Version: 2018.2.26
 Release: 2%{?dist}
 License: Public Domain
 
-Group: System Environment/Base
 URL: https://fedoraproject.org/wiki/CA-Certificates
 
 #Please always update both certdata.txt and nssckbi.h
