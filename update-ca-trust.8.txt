@@ -202,6 +202,15 @@ trusted for E-Mail protection.
 File objsign-ca-bundle.pem contains CA certificates 
 trusted for code signing.
 
+The directory /etc/pki/ca-trust/extracted/edk2/ contains a CA
+certificate bundle ("cacerts.bin") in the "sequence of
+EFI_SIGNATURE_LISTs" format, defined in the UEFI-2.7 specification,
+sections "31.4.1 Signature Database" and
+"EFI_CERT_X509_GUID". Distrust information cannot be represented in
+this file format, and distrusted certificates are missing from these
+files. File "cacerts.bin" contains CA certificates trusted for TLS
+server authentication.
+
 
 COMMANDS
 --------
