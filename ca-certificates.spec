@@ -35,11 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2018.2.24
-Release: 2
+Version: 2018.2.26
+Release: 3
 License: Public Domain
 
-Group: System Environment/Base
 URL: https://fedoraproject.org/wiki/CA-Certificates
 
 #Please always update both certdata.txt and nssckbi.h
@@ -58,11 +57,12 @@ Source13: README.extr
 Source14: README.java
 Source15: README.openssl
 Source16: README.pem
-Source17: README.src
-Source18: fetch.sh
-Source19: README
-Source20: sources
-Source21: sort-blocks.py
+Source17: README.edk2
+Source18: README.src
+Source30: fetch.sh
+Source31: README
+Source32: sources
+Source33: sort-blocks.py
 
 BuildArch: noarch
 
@@ -73,13 +73,13 @@ Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.23.4
-Requires(post): p11-kit-trust >= 0.23.4
-Requires: p11-kit >= 0.23.4
-Requires: p11-kit-trust >= 0.23.4
+Requires(post): p11-kit >= 0.23.10
+Requires(post): p11-kit-trust >= 0.23.10
+Requires: p11-kit >= 0.23.10
+Requires: p11-kit-trust >= 0.23.10
 
 #BuildRequires: perl-interpreter
-BuildRequires: python2
+BuildRequires: python3-base
 BuildRequires: openssl
 #BuildRequires: asciidoc
 #BuildRequires: libxslt
@@ -100,7 +100,7 @@ mkdir %{name}/java
 pushd %{name}/certs
  pwd
  cp %{SOURCE0} .
- python %{SOURCE4} >c2p.log 2>c2p.err
+ python3 %{SOURCE4} >c2p.log 2>c2p.err
 popd
 pushd %{name}
  (
@@ -171,12 +171,12 @@ popd
 
 #manpage
 cp %{SOURCE10} %{name}/update-ca-trust.8.txt
-#asciidoc.py -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
-#xsltproc --nonet -o %{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/update-ca-trust.8.xml
+#asciidoc.py -v -d manpage -b docbook %%{name}/update-ca-trust.8.txt
+#xsltproc --nonet -o %%{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %%{name}/update-ca-trust.8.xml
 
 cp %{SOURCE9} %{name}/ca-legacy.8.txt
-#asciidoc.py -v -d manpage -b docbook %{name}/ca-legacy.8.txt
-#xsltproc --nonet -o %{name}/ca-legacy.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/ca-legacy.8.xml
+#asciidoc.py -v -d manpage -b docbook %%{name}/ca-legacy.8.txt
+#xsltproc --nonet -o %%{name}/ca-legacy.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %%{name}/ca-legacy.8.xml
 
 
 %install
@@ -191,6 +191,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
@@ -198,15 +199,16 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_mandir}/man8
 
-#install -p -m 644 %{name}/update-ca-trust.8 $RPM_BUILD_ROOT%{_mandir}/man8
-#install -p -m 644 %{name}/ca-legacy.8 $RPM_BUILD_ROOT%{_mandir}/man8
+#install -p -m 644 %%{name}/update-ca-trust.8 $RPM_BUILD_ROOT%%{_mandir}/man8
+#install -p -m 644 %%{name}/ca-legacy.8 $RPM_BUILD_ROOT%%{_mandir}/man8
 install -p -m 644 %{SOURCE11} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/README
 install -p -m 644 %{SOURCE12} $RPM_BUILD_ROOT%{catrustdir}/README
 install -p -m 644 %{SOURCE13} $RPM_BUILD_ROOT%{catrustdir}/extracted/README
 install -p -m 644 %{SOURCE14} $RPM_BUILD_ROOT%{catrustdir}/extracted/java/README
 install -p -m 644 %{SOURCE15} $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/README
 install -p -m 644 %{SOURCE16} $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/README
-install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/source/README
+install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/README
+install -p -m 644 %{SOURCE18} $RPM_BUILD_ROOT%{catrustdir}/source/README
 
 install -p -m 644 %{name}/%{p11_format_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{p11_format_bundle}
 
@@ -238,6 +240,8 @@ touch $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{openssl_format_trust_bund
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
+touch $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
+chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 
 # /etc/ssl/certs symlink for 3rd-party tools
 ln -s ../pki/tls/certs \
@@ -309,8 +313,6 @@ fi
 
 
 %files
-%defattr(-,root,root,-)
-
 %dir %{_sysconfdir}/ssl
 %dir %{pkidir}/tls
 %dir %{pkidir}/tls/certs
@@ -339,6 +341,7 @@ fi
 %{catrustdir}/extracted/java/README
 %{catrustdir}/extracted/openssl/README
 %{catrustdir}/extracted/pem/README
+%{catrustdir}/extracted/edk2/README
 %{catrustdir}/source/README
 
 # symlinks for old locations
@@ -364,4 +367,5 @@ fi
 %ghost %{catrustdir}/extracted/pem/objsign-ca-bundle.pem
 %ghost %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle}
 %ghost %{catrustdir}/extracted/%{java_bundle}
+%ghost %{catrustdir}/extracted/edk2/cacerts.bin
 

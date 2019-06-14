@@ -1,3 +1,6 @@
+* Thu Jun 13 2019 David Greaves <david.greaves@jolla.com> - 2019.2.24-2
+- Update to latest upstream ca-certificates. Fixes JB#36223
+
 * Tue Jun 12 2018 Pekka Vuorela <pekka.vuorela@jolla.com> - 2018.2.24-2
 - Update to latest upstream ca-certificates. Fixes JB#36223
 

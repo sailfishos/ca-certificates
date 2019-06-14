@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Expected input is a file, where blocks of lines are separated by newline.
 # Blocks will be sorted.
@@ -9,7 +9,7 @@ import sys
 import string
 
 if (len(sys.argv) != 2):
-    print "syntax: " + sys.argv[0] + " input-filename"
+    print("syntax: " + sys.argv[0] + " input-filename")
     sys.exit(1)
 
 filename = sys.argv[1]
@@ -31,4 +31,4 @@ with open(filename, 'r') as f:
 block_list.sort()
 
 for block in block_list:
-    print block
+    print(block)
