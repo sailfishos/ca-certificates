@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2018.2.26
+Version: 2019.2.32
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -369,6 +369,30 @@ fi
 
 
 %changelog
+*Wed Jun 19 2019 Bob Relyea <rrelyea@redhat.com> 2019.2.32-2
+ - Update to CKBI 2.32 from NSS 3.44
+   Removing: 
+    # Certificate "Visa eCommerce Root"
+    # Certificate "AC Raiz Certicamara S.A."
+    # Certificate "Certplus Root CA G1"
+    # Certificate "Certplus Root CA G2"
+    # Certificate "OpenTrust Root CA G1"
+    # Certificate "OpenTrust Root CA G2"
+    # Certificate "OpenTrust Root CA G3"
+   Adding: 
+    # Certificate "GTS Root R1"
+    # Certificate "GTS Root R2"
+    # Certificate "GTS Root R3"
+    # Certificate "GTS Root R4"
+    # Certificate "UCA Global G2 Root"
+    # Certificate "UCA Extended Validation Root"
+    # Certificate "Certigna Root CA"
+    # Certificate "emSign Root CA - G1"
+    # Certificate "emSign ECC Root CA - G3"
+    # Certificate "emSign Root CA - C1"
+    # Certificate "emSign ECC Root CA - C3"
+    # Certificate "Hongkong Post Root CA 3"
+
 * Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2018.2.26-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
