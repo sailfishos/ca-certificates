@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2019.2.32
+Version: 2020.2.40
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -369,6 +369,18 @@ fi
 
 
 %changelog
+*Wed Jan 22 2020 Daiki Ueno <dueno@redhat.com> - 2020.2.40-2
+- Update to CKBI 2.40 from NSS 3.48
+-    Removing:
+-     # Certificate "UTN USERFirst Email Root CA"
+-     # Certificate "Certplus Class 2 Primary CA"
+-     # Certificate "Deutsche Telekom Root CA 2"
+-     # Certificate "Swisscom Root CA 2"
+-     # Certificate "Certinomis - Root CA"
+-    Adding:
+-     # Certificate "Entrust Root Certification Authority - G4"
+- certdata2pem.py: emit flags for CKA_NSS_{SERVER,EMAIL}_DISTRUST_AFTER
+
 * Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.32-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
