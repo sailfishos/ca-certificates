@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2020.2.40
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -71,10 +71,10 @@ Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.23.10
-Requires(post): p11-kit-trust >= 0.23.10
-Requires: p11-kit >= 0.23.10
-Requires: p11-kit-trust >= 0.23.10
+Requires(post): p11-kit >= 0.23.19
+Requires(post): p11-kit-trust >= 0.23.19
+Requires: p11-kit >= 0.23.19
+Requires: p11-kit-trust >= 0.23.19
 
 BuildRequires: perl-interpreter
 BuildRequires: python3
@@ -369,6 +369,9 @@ fi
 
 
 %changelog
+* Tue Jan 28 2020 Daiki Ueno <dueno@redhat.com> - 2020.2.40-3
+- Update versioned dependency on p11-kit
+
 *Wed Jan 22 2020 Daiki Ueno <dueno@redhat.com> - 2020.2.40-2
 - Update to CKBI 2.40 from NSS 3.48
 -    Removing:
