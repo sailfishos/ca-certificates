@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2020.2.40
+Version: 2020.2.41
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -306,9 +306,28 @@ fi
 #if [ $1 -gt 1 ] ; then
 #  # when upgrading or downgrading
 #fi
+# if ln is available, go ahead and run the ca-legacy and update
+# scripts. If not, what until %posttrans.
+if [ -x %{-bindir}/ln ]; then
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
+%define caupdatecomplete 1
+fi
 
+%posttrans
+# When coreutils is installing with ca-certificates
+# we need to wait until coreutils install to
+# run our update since update requires ln to complete.
+# There is a circular dependency here where
+# ca-certificates depends on coreutils
+# coreutils depends on openssl
+# openssl depends on ca-certificates
+# in that case, we want to complete the install in
+# %posttrans when ln is available
+%if ! %{caupdatecomplete}
+%{_bindir}/ca-legacy install
+%{_bindir}/update-ca-trust
+fi
 
 %files
 %dir %{_sysconfdir}/ssl
@@ -369,6 +388,13 @@ fi
 
 
 %changelog
+*Wed Jun 10 2020 Bob Relyea <rrelyea@redhat.com> - 2020.2.41-2
+- Update to CKBI 2.41 from NSS 3.53.0
+-    Removing:
+-     # Certificate "AddTrust Low-Value Services Root"
+-     # Certificate "AddTrust External Root"
+-     # Certificate "Staat der Nederlanden Root CA - G2"
+
 * Tue Jan 28 2020 Daiki Ueno <dueno@redhat.com> - 2020.2.40-3
 - Update versioned dependency on p11-kit
 
