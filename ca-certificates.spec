@@ -327,7 +327,7 @@ fi
 %if ! %{caupdatecomplete}
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
-fi
+%endif
 
 %files
 %dir %{_sysconfdir}/ssl
