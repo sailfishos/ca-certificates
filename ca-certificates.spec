@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2020.2.41
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -386,7 +386,10 @@ fi
 
 
 %changelog
-*Wed Jun 10 2020 Bob Relyea <rrelyea@redhat.com> - 2020.2.41-2
+* Tue Jun 16 2020 Adam Williamson <awilliam@redhat.com> - 2020.2.41-3
+- Fix up broken %post and %postinstall scriptlet changes from -2
+
+* Wed Jun 10 2020 Bob Relyea <rrelyea@redhat.com> - 2020.2.41-2
 - Update to CKBI 2.41 from NSS 3.53.0
 -    Removing:
 -     # Certificate "AddTrust Low-Value Services Root"
@@ -396,7 +399,7 @@ fi
 * Tue Jan 28 2020 Daiki Ueno <dueno@redhat.com> - 2020.2.40-3
 - Update versioned dependency on p11-kit
 
-*Wed Jan 22 2020 Daiki Ueno <dueno@redhat.com> - 2020.2.40-2
+* Wed Jan 22 2020 Daiki Ueno <dueno@redhat.com> - 2020.2.40-2
 - Update to CKBI 2.40 from NSS 3.48
 -    Removing:
 -     # Certificate "UTN USERFirst Email Root CA"
@@ -411,7 +414,7 @@ fi
 * Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.32-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
-*Wed Jun 19 2019 Bob Relyea <rrelyea@redhat.com> 2019.2.32-2
+* Wed Jun 19 2019 Bob Relyea <rrelyea@redhat.com> 2019.2.32-2
  - Update to CKBI 2.32 from NSS 3.44
    Removing: 
     # Certificate "Visa eCommerce Root"
