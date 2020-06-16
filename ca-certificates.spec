@@ -307,11 +307,10 @@ fi
 #  # when upgrading or downgrading
 #fi
 # if ln is available, go ahead and run the ca-legacy and update
-# scripts. If not, what until %posttrans.
-if [ -x %{-bindir}/ln ]; then
+# scripts. If not, wait until %posttrans.
+if [ -x %{_bindir}/ln ]; then
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
-%define caupdatecomplete 1
 fi
 
 %posttrans
@@ -322,12 +321,11 @@ fi
 # ca-certificates depends on coreutils
 # coreutils depends on openssl
 # openssl depends on ca-certificates
-# in that case, we want to complete the install in
-# %posttrans when ln is available
-%if ! %{caupdatecomplete}
+# so we run the scripts here too, in case we couldn't run them in
+# post. If we *could* run them in post this is an unnecessary
+# duplication, but it shouldn't hurt anything
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
-%endif
 
 %files
 %dir %{_sysconfdir}/ssl
