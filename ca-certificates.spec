@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2020.2.41
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -386,6 +386,9 @@ fi
 
 
 %changelog
+* Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2020.2.41-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Tue Jun 16 2020 Adam Williamson <awilliam@redhat.com> - 2020.2.41-3
 - Fix up broken %post and %postinstall scriptlet changes from -2
 
