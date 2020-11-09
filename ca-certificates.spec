@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2020.2.41
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -241,9 +241,15 @@ chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 
-# /etc/ssl/certs symlink for 3rd-party tools
-ln -s ../pki/tls/certs \
+# /etc/ssl symlinks for 3rd-party tools and cross-distro compatibility
+ln -s /etc/pki/tls/certs \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+    $RPM_BUILD_ROOT%{_sysconfdir}/ssl/cert.pem
+ln -s /etc/pki/tls/openssl.cnf \
+    $RPM_BUILD_ROOT%{_sysconfdir}/ssl/openssl.cnf
+ln -s /etc/pki/tls/ct_log_list.cnf \
+    $RPM_BUILD_ROOT%{_sysconfdir}/ssl/ct_log_list.cnf
 # legacy filenames
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
@@ -364,8 +370,11 @@ fi
 %{pkidir}/tls/certs/%{classic_tls_bundle}
 %{pkidir}/tls/certs/%{openssl_format_trust_bundle}
 %{pkidir}/%{java_bundle}
-# symlink directory
+# symlinks to cross-distro compatibility files and directory
 %{_sysconfdir}/ssl/certs
+%{_sysconfdir}/ssl/cert.pem
+%{_sysconfdir}/ssl/openssl.cnf
+%{_sysconfdir}/ssl/ct_log_list.cnf
 
 # master bundle file with trust
 %{_datadir}/pki/ca-trust-source/%{p11_format_bundle}
@@ -386,6 +395,9 @@ fi
 
 
 %changelog
+* Mon Nov 09 2020 Christian Heimes <cheimes@redhat.com> - 2020.2.41-5
+- Add cross-distro compatibility symlinks to /etc/ssl (rhbz#1895619)
+
 * Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2020.2.41-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
