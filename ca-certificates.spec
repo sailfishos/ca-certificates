@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2020.2.41
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -184,6 +184,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{pkidir}/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/anchors
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
@@ -192,6 +193,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
@@ -341,6 +343,7 @@ fi
 %dir %{catrustdir}
 %dir %{catrustdir}/source
 %dir %{catrustdir}/source/anchors
+%dir %{catrustdir}/source/blocklist
 %dir %{catrustdir}/source/blacklist
 %dir %{catrustdir}/extracted
 %dir %{catrustdir}/extracted/pem
@@ -349,6 +352,7 @@ fi
 %dir %{_datadir}/pki
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
+%dir %{_datadir}/pki/ca-trust-source/blocklist
 %dir %{_datadir}/pki/ca-trust-source/blacklist
 %dir %{_datadir}/pki/ca-trust-legacy
 
@@ -376,7 +380,7 @@ fi
 %{_sysconfdir}/ssl/openssl.cnf
 %{_sysconfdir}/ssl/ct_log_list.cnf
 
-# master bundle file with trust
+# primary bundle file with trust
 %{_datadir}/pki/ca-trust-source/%{p11_format_bundle}
 
 %{_datadir}/pki/ca-trust-legacy/%{legacy_default_bundle}
@@ -395,6 +399,18 @@ fi
 
 
 %changelog
+* Wed Jan 13 2021 Bob Relyea <rrelyea@redhat.com> - 2020.2.41-6
+- remove unnecessarily divisive terms, take 1.
+-   in ca-certificates there are 3 cases:
+-   1) master refering to the fedora master branch in the fetch.sh script.
+-      This can only be changed once fedora changes the master branch name.
+-   2) a reference to the 'master bundle' in this file: this has been changed
+-      to 'primary bundle'.
+-   3) a couple of blacklist directories owned by this package, but used to
+-      p11-kit. New 'blocklist' directories have been created, but p11-kit
+-      needs to be updated before the old blacklist directories can be removed
+-      and the man pages corrected.
+
 * Mon Nov 09 2020 Christian Heimes <cheimes@redhat.com> - 2020.2.41-5
 - Add cross-distro compatibility symlinks to /etc/ssl (rhbz#1895619)
 
