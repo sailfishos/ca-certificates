@@ -35,8 +35,8 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2018.2.26
-Release: 2
+Version: 2020.2.41
+Release: 4
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -73,10 +73,10 @@ Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.23.10
-Requires(post): p11-kit-trust >= 0.23.10
-Requires: p11-kit >= 0.23.10
-Requires: p11-kit-trust >= 0.23.10
+Requires(post): p11-kit >= 0.23.19
+Requires(post): p11-kit-trust >= 0.23.19
+Requires: p11-kit >= 0.23.19
+Requires: p11-kit-trust >= 0.23.19
 
 #BuildRequires: perl-interpreter
 BuildRequires: python3-base
@@ -308,9 +308,26 @@ fi
 #if [ $1 -gt 1 ] ; then
 #  # when upgrading or downgrading
 #fi
+# if ln is available, go ahead and run the ca-legacy and update
+# scripts. If not, wait until %posttrans.
+if [ -x %{_bindir}/ln ]; then
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
+fi
 
+%posttrans
+# When coreutils is installing with ca-certificates
+# we need to wait until coreutils install to
+# run our update since update requires ln to complete.
+# There is a circular dependency here where
+# ca-certificates depends on coreutils
+# coreutils depends on openssl
+# openssl depends on ca-certificates
+# so we run the scripts here too, in case we couldn't run them in
+# post. If we *could* run them in post this is an unnecessary
+# duplication, but it shouldn't hurt anything
+%{_bindir}/ca-legacy install
+%{_bindir}/update-ca-trust
 
 %files
 %dir %{_sysconfdir}/ssl
