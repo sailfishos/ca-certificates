@@ -63,6 +63,7 @@ Source30: fetch.sh
 Source31: README
 Source32: sources
 Source33: sort-blocks.py
+Source34: check_certs.sh
 
 BuildArch: noarch
 
