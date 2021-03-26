@@ -84,7 +84,7 @@ if [ "${email}" = "" ]; then
 fi
 # rawhide >=2, branches 1.x
 cwd=$(pwd)
-if [ `basename ${cwd}` = master ]; then
+if [ `basename ${cwd}` = rawhide ]; then
     release="2"
 else
     release="1.0"
