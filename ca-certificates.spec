@@ -311,7 +311,7 @@ fi
 #fi
 # if ln is available, go ahead and run the ca-legacy and update
 # scripts. If not, wait until %posttrans.
-if [ -x %{_bindir}/ln ]; then
+if [ -x /bin/ln ]; then
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
 fi
