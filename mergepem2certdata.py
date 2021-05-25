@@ -31,6 +31,8 @@ import getopt
 import asn1
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
+from datetime import datetime
+from dateutil.parser import parse
 
 objects = []
 
@@ -41,6 +43,7 @@ pem='./cert.pem'
 output='./certdata_out.txt'
 trust='CKA_TRUST_CODE_SIGNING'
 merge_label="Non-Mozilla Object Signing Only Certificate"
+dateString='thisyear'
 
 trust_types = {
   "CKA_TRUST_SERVER_AUTH",
@@ -87,7 +90,7 @@ def dumpOctal(f,value):
         f.write("\\%03o"%int.from_bytes(value[i:i+1],sys.byteorder))
     f.write("\nEND\n")
 
-# in python 3.8 this can be replaces with return byteval.hex(':',1)
+# in python 3.8 this can be replaced with return byteval.hex(':',1)
 def formatHex(byteval) :
     string=byteval.hex()
     string_out=""
@@ -96,8 +99,27 @@ def formatHex(byteval) :
     string_out += string[-2:]
     return string_out
 
+def getdate(dateString):
+    print("dateString= %s"%dateString)
+    if dateString.upper() == "THISYEAR":
+        return datetime(datetime.today().year,12,31,11,59,59,9999)
+    if dateString.upper() == "TODAY":
+        return datetime.today()
+    return parse(dateString, fuzzy=True);
+
+def getTrust(objlist, serial, issuer) :
+    for obj in objlist:
+        if obj['CKA_CLASS'] == 'CKO_NSS_TRUST' and obj['CKA_SERIAL_NUMBER'] == serial and obj['CKA_ISSUER'] == issuer:
+            return obj
+    return None
+
+def isDistrusted(obj) :
+    if (obj == None):
+        return False
+    return obj['CKA_TRUST_SERVER_AUTH'] == 'CKT_NSS_NOT_TRUSTED' and obj['CKA_TRUST_EMAIL_PROTECTION'] == 'CKT_NSS_NOT_TRUSTED' and obj['CKA_TRUST_CODE_SIGNING'] == 'CKT_NSS_NOT_TRUSTED'
+
 try:
-    opts, args = getopt.getopt(sys.argv[1:],"c:o:p:t:l:",)
+    opts, args = getopt.getopt(sys.argv[1:],"c:o:p:t:l:x:",)
 except getopt.GetoptError as err:
     print(err)
     print(sys.argv[0] + ' [-c certdata] [-p pem] [-o certdata_target] [-t trustvalue] [-l merge_label]')
@@ -106,6 +128,7 @@ except getopt.GetoptError as err:
     print('-o certdata_target  resulting output file (default="'+output+'")');
     print('-t trustvalue       what these CAs are trusted for (default="'+trust+'")');
     print('-l merge_label      what label CAs that aren\'t in certdata (default="'+merge_label+'")');
+    print('-x date             remove all certs that expire before data (default='+dateString+')');
     sys.exit(2)
 
 for opt, arg in opts:
@@ -119,6 +142,16 @@ for opt, arg in opts:
         trust = arg
     elif opt == '-l' :
         merge_label = arg
+    elif opt == '-x' :
+        dateString = arg
+
+# parse dateString
+verifyDate = True
+if dateString.upper() == "NEVER":
+   verifyDate = False
+else:
+   date = getdate(dateString)
+
 
 # read the pem file
 in_cert, certvalue = False, ""
@@ -138,7 +171,6 @@ for line in open(pem, 'r'):
        in_cert = False;
        continue
     certvalue += line;
-     
 
 # read the certdata.txt file
 in_data, in_multiline, in_obj = False, False, False
@@ -203,12 +235,26 @@ for line in open(certdata, 'r'):
 if len(list(obj.items())) > 0:
     objects.append(obj)
 
+# strip out expired certificates from certdata.txt
+if verifyDate :
+    for obj in objects:
+        if obj['CKA_CLASS'] == 'CKO_CERTIFICATE' :
+            cert = x509.load_der_x509_certificate(obj['CKA_VALUE'])
+            if (cert.not_valid_after <= date) :
+                trust_obj = getTrust(objects,obj['CKA_SERIAL_NUMBER'],obj['CKA_ISSUER'])
+                # we don't remove distrusted expired certificates
+                if  not isDistrusted(trust_obj) :
+                    print("  Remove cert %s"%obj['CKA_LABEL'])
+                    print("     Expires: %s"%cert.not_valid_after.strftime("%m/%d/%Y"))
+                    print("     Prune time %s: "%date.strftime("%m/%d/%Y"))
+                    obj['Comment'] = None;
+                    if (trust_obj != None):
+                        trust_obj['Comment'] = None;
+
 # now merge the results
 for certval in pemcerts:
     certder = base64.b64decode(certval)
     cert = x509.load_der_x509_certificate(certder)
-    certhashsha1 = cert.fingerprint(hashes.SHA1())
-    certhashmd5 =  cert.fingerprint(hashes.MD5())
     try:
         label=cert.subject.get_attributes_for_oid(x509.oid.NameOID.COMMON_NAME)[0].value
     except:
@@ -219,6 +265,13 @@ for certval in pemcerts:
                 label=cert.subject.get_attributes_for_oid(x509.oid.NameOID.ORGANIZATION_NAME)[0].value
             except:
                 label="Unknown Certificate"
+    if cert.not_valid_after <= date:
+        print("  Skipping code signing cert %s"%label)
+        print("     Expires: %s"%cert.not_valid_after.strftime("%m/%d/%Y"))
+        print("     Prune time %s: "%date.strftime("%m/%d/%Y"))
+        continue
+    certhashsha1 = cert.fingerprint(hashes.SHA1())
+    certhashmd5 =  cert.fingerprint(hashes.MD5())
     
     
     found = False
@@ -235,7 +288,7 @@ for certval in pemcerts:
             continue
         obj[trust] = 'CKT_NSS_TRUSTED_DELEGATOR'
         found = True
-        print('Found "'+label+'"');
+        print('Updating "'+label+'" with code signing');
         break
     if  found :
         continue
@@ -275,7 +328,7 @@ for certval in pemcerts:
     # append the trust values
     obj=dict()
     obj['Comment']= comment%"Trust for"
-    obj['CKA_CLASS'] = 'CKO_TRUST'
+    obj['CKA_CLASS'] = 'CKO_NSS_TRUST'
     obj['CKA_TOKEN'] = 'CK_TRUE'
     obj['CKA_PRIVATE'] = 'CK_FALSE'
     obj['CKA_MODIFIABLE'] = 'CK_FALSE'
@@ -291,13 +344,16 @@ for certval in pemcerts:
           obj[t] = 'CKT_NSS_MUST_VERIFY_TRUST'
     obj['CKA_TRUST_STEP_UP_APPROVED'] = 'CK_FALSE'
     objects.append(obj)
-    print('Added "'+label+'"');
+    print('Adding code signing cert "'+label+'"');
 
 # now dump the results
 f = open(output, 'w')
 f.write(header)
 for obj in objects:
     if 'Comment' in obj:
+        # if comment is None, we've deleted the entry above
+        if obj['Comment'] == None:
+            continue
         f.write(obj['Comment'])
     else:
         print("Object with no comment!!")

@@ -22,7 +22,7 @@ while [ -n "$1" ]; do
         shift
 	certdata=$1
 	;;
-   "-u")
+   "-n")
         merge=0
         ;;
    "-d")
@@ -50,7 +50,7 @@ if [ ${merge} -eq 0 ]; then
 fi
 
 out=${certdata}
-if [ ${diff} -eq 1]; then
+if [ ${diff} -eq 1 ]; then
    out=${certdata}.out
 fi
 

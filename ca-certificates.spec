@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2020.2.41
+Version: 2021.2.48
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 7%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -399,6 +399,54 @@ fi
 
 
 %changelog
+*Tue May 25 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.48-2
+- Update to CKBI 2.48 from NSS 3.64
+-    Removing:
+-     # Certificate "Verisign Class 3 Public Primary Certification Authority - G3"
+-     # Certificate "GeoTrust Universal CA 2"
+-     # Certificate "QuoVadis Root CA"
+-     # Certificate "Sonera Class 2 Root CA"
+-     # Certificate "Taiwan GRCA"
+-     # Certificate "VeriSign Class 3 Public Primary Certification Authority - G4"
+-     # Certificate "EE Certification Centre Root CA"
+-     # Certificate "LuxTrust Global Root 2"
+-     # Certificate "Symantec Class 1 Public Primary Certification Authority - G4"
+-     # Certificate "Symantec Class 2 Public Primary Certification Authority - G4"
+-    Adding:
+-     # Certificate "Microsoft ECC Root Certificate Authority 2017"
+-     # Certificate "Microsoft RSA Root Certificate Authority 2017"
+-     # Certificate "e-Szigno Root CA 2017"
+-     # Certificate "certSIGN Root CA G2"
+-     # Certificate "Trustwave Global Certification Authority"
+-     # Certificate "Trustwave Global ECC P256 Certification Authority"
+-     # Certificate "Trustwave Global ECC P384 Certification Authority"
+-     # Certificate "NAVER Global Root Certification Authority"
+-     # Certificate "AC RAIZ FNMT-RCM SERVIDORES SEGUROS"
+-     # Certificate "GlobalSign Secure Mail Root R45"
+-     # Certificate "GlobalSign Secure Mail Root E45"
+-     # Certificate "GlobalSign Root R46"
+-     # Certificate "GlobalSign Root E46"
+-     # Certificate "Certum EC-384 CA"
+-     # Certificate "Certum Trusted Root CA"
+-     # Certificate "GlobalSign Code Signing Root R45"
+-     # Certificate "GlobalSign Code Signing Root E45"
+-     # Certificate "Halcom Root Certificate Authority"
+-     # Certificate "Symantec Class 3 Public Primary Certification Authority - G6"
+-     # Certificate "GLOBALTRUST"
+-     # Certificate "MULTICERT Root Certification Authority 01"
+-     # Certificate "Verizon Global Root CA"
+-     # Certificate "Tunisian Root Certificate Authority - TunRootCA2"
+-     # Certificate "CAEDICOM Root"
+-     # Certificate "COMODO Certification Authority"
+-     # Certificate "Security Communication ECC RootCA1"
+-     # Certificate "Security Communication RootCA3"
+-     # Certificate "AC RAIZ DNIE"
+-     # Certificate "VeriSign Class 3 Public Primary Certification Authority - G3"
+-     # Certificate "NetLock Platina (Class Platinum) Főtanúsítvány"
+-     # Certificate "GLOBALTRUST 2015"
+-     # Certificate "emSign Root CA - G2"
+-     # Certificate "emSign Root CA - C2"
+
 * Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2020.2.41-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
