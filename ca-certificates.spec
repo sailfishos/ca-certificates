@@ -35,7 +35,7 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2021.2.48
+Version: 2021.2.50
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
 Release: 2%{?dist}
@@ -399,6 +399,42 @@ fi
 
 
 %changelog
+*Wed Jun 16 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.50-2
+- Update to CKBI 2.50 from NSS 3.67
+-    Removing:
+-     # Certificate "Trustis FPS Root CA"
+-     # Certificate "GlobalSign Code Signing Root R45"
+-     # Certificate "GlobalSign Code Signing Root E45"
+-     # Certificate "Halcom Root Certificate Authority"
+-     # Certificate "Symantec Class 3 Public Primary Certification Authority - G6"
+-     # Certificate "GLOBALTRUST"
+-     # Certificate "MULTICERT Root Certification Authority 01"
+-     # Certificate "Verizon Global Root CA"
+-     # Certificate "Tunisian Root Certificate Authority - TunRootCA2"
+-     # Certificate "CAEDICOM Root"
+-     # Certificate "COMODO Certification Authority"
+-     # Certificate "Security Communication ECC RootCA1"
+-     # Certificate "Security Communication RootCA3"
+-     # Certificate "AC RAIZ DNIE"
+-     # Certificate "VeriSign Class 3 Public Primary Certification Authority - G3"
+-     # Certificate "VeriSign Class 3 Public Primary Certification Authority - G5"
+-     # Certificate "VeriSign Universal Root Certification Authority"
+-     # Certificate "GeoTrust Global CA"
+-     # Certificate "GeoTrust Primary Certification Authority"
+-     # Certificate "thawte Primary Root CA"
+-     # Certificate "thawte Primary Root CA - G2"
+-     # Certificate "thawte Primary Root CA - G3"
+-     # Certificate "GeoTrust Primary Certification Authority - G3"
+-     # Certificate "GeoTrust Primary Certification Authority - G2"
+-     # Certificate "GeoTrust Universal CA"
+-     # Certificate "NetLock Platina (Class Platinum) Főtanúsítvány"
+-     # Certificate "GLOBALTRUST 2015"
+-     # Certificate "emSign Root CA - G2"
+-     # Certificate "emSign Root CA - C2"
+-    Adding:
+-     # Certificate "GLOBALTRUST 2020"
+-     # Certificate "ANF Secure Server Root CA"
+
 *Tue May 25 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.48-2
 - Update to CKBI 2.48 from NSS 3.64
 -    Removing:
