@@ -5,8 +5,9 @@
 #
 baseurl="https://hg.mozilla.org/releases/mozilla-release/raw-file/default/security/nss/lib"
 force=0
+skip_signed_obj=0
 release_type="RTM"
-release="3_43"
+release="3_65"
 while [ -n "$1" ]; do
    case $1 in
    "-d")
@@ -32,11 +33,15 @@ while [ -n "$1" ]; do
    "-f")
 	force=1
 	;;
+   "-s")
+        skip_signed_obj=1
+        ;;
     *)
 	echo "usage: $0 [-r] [-n release] [-f]"
 	echo "-d           use the development tip rather than the latest release"
 	echo "-n release   fetch a specific nss release"
 	echo "-f           skip the verify check"
+	echo "-s           skip fetching signed objects"
 	exit 1
 	;;
     esac
@@ -84,7 +89,7 @@ if [ "${email}" = "" ]; then
 fi
 # rawhide >=2, branches 1.x
 cwd=$(pwd)
-if [ `basename ${cwd}` = master ]; then
+if [ `basename ${cwd}` = rawhide ]; then
     release="2"
 else
     release="1.0"
@@ -106,6 +111,10 @@ if [ $? -ne 0 ]; then
    echo " To restore the old certdata.txt use:"
    echo "    git checkout -- certdata.txt"
    exit 1;
+fi
+
+if [ ${skip_signed_obj} -eq 0 ]; then
+   ./fetch_objsign.sh
 fi
 
 # Verify everything is good with the user

@@ -35,8 +35,8 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2020.2.41
-Release: 4
+Version: 2021.2.50
+Release: 3
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -187,6 +187,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{pkidir}/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/anchors
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
@@ -195,6 +196,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
@@ -244,9 +246,15 @@ chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 
-# /etc/ssl/certs symlink for 3rd-party tools
-ln -s ../pki/tls/certs \
+# /etc/ssl symlinks for 3rd-party tools and cross-distro compatibility
+ln -s /etc/pki/tls/certs \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+    $RPM_BUILD_ROOT%{_sysconfdir}/ssl/cert.pem
+ln -s /etc/pki/tls/openssl.cnf \
+    $RPM_BUILD_ROOT%{_sysconfdir}/ssl/openssl.cnf
+ln -s /etc/pki/tls/ct_log_list.cnf \
+    $RPM_BUILD_ROOT%{_sysconfdir}/ssl/ct_log_list.cnf
 # legacy filenames
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
@@ -338,6 +346,7 @@ fi
 %dir %{catrustdir}
 %dir %{catrustdir}/source
 %dir %{catrustdir}/source/anchors
+%dir %{catrustdir}/source/blocklist
 %dir %{catrustdir}/source/blacklist
 %dir %{catrustdir}/extracted
 %dir %{catrustdir}/extracted/pem
@@ -346,6 +355,7 @@ fi
 %dir %{_datadir}/pki
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
+%dir %{_datadir}/pki/ca-trust-source/blocklist
 %dir %{_datadir}/pki/ca-trust-source/blacklist
 %dir %{_datadir}/pki/ca-trust-legacy
 
@@ -367,10 +377,13 @@ fi
 %{pkidir}/tls/certs/%{classic_tls_bundle}
 %{pkidir}/tls/certs/%{openssl_format_trust_bundle}
 %{pkidir}/%{java_bundle}
-# symlink directory
+# symlinks to cross-distro compatibility files and directory
 %{_sysconfdir}/ssl/certs
+%{_sysconfdir}/ssl/cert.pem
+%{_sysconfdir}/ssl/openssl.cnf
+%{_sysconfdir}/ssl/ct_log_list.cnf
 
-# master bundle file with trust
+# primary bundle file with trust
 %{_datadir}/pki/ca-trust-source/%{p11_format_bundle}
 
 %{_datadir}/pki/ca-trust-legacy/%{legacy_default_bundle}
@@ -386,4 +399,3 @@ fi
 %ghost %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle}
 %ghost %{catrustdir}/extracted/%{java_bundle}
 %ghost %{catrustdir}/extracted/edk2/cacerts.bin
-
