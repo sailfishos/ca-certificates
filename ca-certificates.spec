@@ -64,6 +64,8 @@ Source31: README
 Source32: sources
 Source33: sort-blocks.py
 Source34: check_certs.sh
+Source35: fetch_objsign.sh
+Source36: mergepem2certdata.py
 
 BuildArch: noarch
 
