@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2021.2.50
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -71,10 +71,10 @@ Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.23.19
-Requires(post): p11-kit-trust >= 0.23.19
-Requires: p11-kit >= 0.23.19
-Requires: p11-kit-trust >= 0.23.19
+Requires(post): p11-kit >= 0.24
+Requires(post): p11-kit-trust >= 0.24
+Requires: p11-kit >= 0.24
+Requires: p11-kit-trust >= 0.24
 
 BuildRequires: perl-interpreter
 BuildRequires: python3
@@ -185,7 +185,6 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/anchors
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blocklist
-mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl
@@ -194,7 +193,6 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blocklist
-mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_mandir}/man8
@@ -344,7 +342,6 @@ fi
 %dir %{catrustdir}/source
 %dir %{catrustdir}/source/anchors
 %dir %{catrustdir}/source/blocklist
-%dir %{catrustdir}/source/blacklist
 %dir %{catrustdir}/extracted
 %dir %{catrustdir}/extracted/pem
 %dir %{catrustdir}/extracted/openssl
@@ -353,7 +350,6 @@ fi
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
 %dir %{_datadir}/pki/ca-trust-source/blocklist
-%dir %{_datadir}/pki/ca-trust-source/blacklist
 %dir %{_datadir}/pki/ca-trust-legacy
 
 %config(noreplace) %{catrustdir}/ca-legacy.conf
@@ -399,6 +395,9 @@ fi
 
 
 %changelog
+*Mon Nov 1 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.50-4
+- remove blacklist directory now that pk11-kit is using blocklist
+
 * Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2021.2.50-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
