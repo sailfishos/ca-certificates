@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2021.2.50
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -61,6 +61,7 @@ Source15: README.openssl
 Source16: README.pem
 Source17: README.edk2
 Source18: README.src
+Source19: README.etcssl
 
 BuildArch: noarch
 
@@ -71,10 +72,10 @@ Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.24
-Requires(post): p11-kit-trust >= 0.24
-Requires: p11-kit >= 0.24
-Requires: p11-kit-trust >= 0.24
+Requires(post): p11-kit >= 0.23
+Requires(post): p11-kit-trust >= 0.23
+Requires: p11-kit >= 0.23
+Requires: p11-kit-trust >= 0.23
 
 BuildRequires: perl-interpreter
 BuildRequires: python3
@@ -184,6 +185,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{pkidir}/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/anchors
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
@@ -192,6 +194,7 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
@@ -207,6 +210,7 @@ install -p -m 644 %{SOURCE15} $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/REA
 install -p -m 644 %{SOURCE16} $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/README
 install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/README
 install -p -m 644 %{SOURCE18} $RPM_BUILD_ROOT%{catrustdir}/source/README
+install -p -m 644 %{SOURCE19} $RPM_BUILD_ROOT%{_sysconfdir}/ssl/README
 
 install -p -m 644 %{name}/%{p11_format_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{p11_format_bundle}
 
@@ -241,8 +245,9 @@ chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 
-# /etc/ssl symlinks for 3rd-party tools and cross-distro compatibility
-ln -s /etc/pki/tls/certs \
+# /etc/ssl is provided in a Debian compatible form for (bad) code that
+# expects it: https://bugzilla.redhat.com/show_bug.cgi?id=1053882
+ln -s %{catrustdir}/extracted/pem/directory-hash \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/cert.pem
@@ -341,6 +346,7 @@ fi
 %dir %{catrustdir}
 %dir %{catrustdir}/source
 %dir %{catrustdir}/source/anchors
+%dir %{catrustdir}/source/blacklist
 %dir %{catrustdir}/source/blocklist
 %dir %{catrustdir}/extracted
 %dir %{catrustdir}/extracted/pem
@@ -349,6 +355,7 @@ fi
 %dir %{_datadir}/pki
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
+%dir %{_datadir}/pki/ca-trust-source/blacklist
 %dir %{_datadir}/pki/ca-trust-source/blocklist
 %dir %{_datadir}/pki/ca-trust-legacy
 
@@ -370,8 +377,10 @@ fi
 %{pkidir}/tls/certs/%{classic_tls_bundle}
 %{pkidir}/tls/certs/%{openssl_format_trust_bundle}
 %{pkidir}/%{java_bundle}
-# symlinks to cross-distro compatibility files and directory
+# Hybrid hash directory with bundle file for Debian compatibility
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1053882
 %{_sysconfdir}/ssl/certs
+%{_sysconfdir}/ssl/README
 %{_sysconfdir}/ssl/cert.pem
 %{_sysconfdir}/ssl/openssl.cnf
 %{_sysconfdir}/ssl/ct_log_list.cnf
@@ -395,6 +404,10 @@ fi
 
 
 %changelog
+*Mon Dec 6 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.50-5
+- integrate Adam William's /etc/ssl/certs with Debian-compatibility
+- back out blocklist change since p11-kit .24 is not yet available on rawhide
+
 *Mon Nov 1 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.50-4
 - remove blacklist directory now that pk11-kit is using blocklist
 
