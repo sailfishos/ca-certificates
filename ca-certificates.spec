@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2021.2.50
+Version: 2021.2.52
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 5%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -404,6 +404,15 @@ fi
 
 
 %changelog
+*Mon Dec 13 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.52-2
+- Update to CKBI 2.52 from NSS 3.72
+-    Adding:
+-     # Certificate "TunTrust Root CA"
+-     # Certificate "HARICA TLS RSA Root CA 2021"
+-     # Certificate "HARICA TLS ECC Root CA 2021"
+-     # Certificate "HARICA Client RSA Root CA 2021"
+-     # Certificate "HARICA Client ECC Root CA 2021"
+
 *Mon Dec 6 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.50-5
 - integrate Adam William's /etc/ssl/certs with Debian-compatibility
 - back out blocklist change since p11-kit .24 is not yet available on rawhide
