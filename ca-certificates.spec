@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2021.2.52
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -404,6 +404,9 @@ fi
 
 
 %changelog
+* Wed Jan 19 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2021.2.52-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 *Mon Dec 13 2021 Bob Relyea <rrelyea@redhat.com> - 2021.2.52-2
 - Update to CKBI 2.52 from NSS 3.72
 -    Adding:
