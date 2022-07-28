@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2022.2.54
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -404,6 +404,27 @@ fi
 
 
 %changelog
+*Thu Jul 28 2022 Bob Relyea <rrelyea@redhat.com> - 2022.2.54-5
+- Update to CKBI 2.54 from NSS 3.79
+-    Removing:
+-     # Certificate "TrustCor ECA-1"
+-     # Certificate "TrustCor RootCert CA-2"
+-     # Certificate "TrustCor RootCert CA-1"
+-     # Certificate "Network Solutions Certificate Authority"
+-     # Certificate "COMODO Certification Authority"
+-     # Certificate "Autoridad de Certificacion Raiz del Estado Venezolano"
+-     # Certificate "Microsec e-Szigno Root CA 2009"
+-     # Certificate "TWCA Root Certification Authority"
+-     # Certificate "Izenpe.com"
+-     # Certificate "state-institutions"
+-     # Certificate "GlobalSign"
+-     # Certificate "Common Policy"
+-     # Certificate "A-Trust-nQual-03"
+-     # Certificate "A-Trust-Qual-02"
+-     # Certificate "Autoridad de Certificacion Firmaprofesional CIF A62634068"
+-     # Certificate "Government Root Certification Authority"
+-     # Certificate "AC Raíz Certicámara S.A."
+
 *Wed Jul 27 2022 Bob Relyea <rrelyea@redhat.com> - 2022.2.54-4
 - Update to CKBI 2.54 from NSS 3.79
 
