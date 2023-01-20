@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2022.2.54
+Version: 2023.2.60
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 6%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -404,6 +404,24 @@ fi
 
 
 %changelog
+*Fri Jan 20 2023 Frantisek Krenzelok <krenzelok.frantisek@gmail.com> - 2023.2.60-2
+- Update to CKBI 2.60 from NSS 3.86
+-    Removing:
+-     # Certificate "Camerfirma Global Chambersign Root"
+-     # Certificate "Staat der Nederlanden EV Root CA"
+-    Adding:
+-     # Certificate "DigiCert TLS ECC P384 Root G5"
+-     # Certificate "DigiCert TLS RSA4096 Root G5"
+-     # Certificate "DigiCert SMIME ECC P384 Root G5"
+-     # Certificate "DigiCert SMIME RSA4096 Root G5"
+-     # Certificate "Certainly Root R1"
+-     # Certificate "Certainly Root E1"
+-     # Certificate "E-Tugra Global Root CA RSA v3"
+-     # Certificate "E-Tugra Global Root CA ECC v3"
+-     # Certificate "DIGITALSIGN GLOBAL ROOT RSA CA"
+-     # Certificate "DIGITALSIGN GLOBAL ROOT ECDSA CA"
+-     # Certificate "Global Chambersign Root"
+
 * Wed Jan 18 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2022.2.54-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
 
