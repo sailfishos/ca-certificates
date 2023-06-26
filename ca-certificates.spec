@@ -81,7 +81,7 @@ BuildRequires: perl-interpreter
 BuildRequires: python3
 BuildRequires: openssl
 BuildRequires: asciidoc
-BuildRequires: libxslt
+BuildRequires: xmlto
 
 %description
 This package contains the set of CA certificates chosen by the
@@ -170,12 +170,12 @@ popd
 
 #manpage
 cp %{SOURCE10} %{name}/update-ca-trust.8.txt
-asciidoc.py -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
-xsltproc --nonet -o %{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/update-ca-trust.8.xml
+asciidoc -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
+xmlto -v -o %{name} man %{name}/update-ca-trust.8.xml
 
 cp %{SOURCE9} %{name}/ca-legacy.8.txt
-asciidoc.py -v -d manpage -b docbook %{name}/ca-legacy.8.txt
-xsltproc --nonet -o %{name}/ca-legacy.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %{name}/ca-legacy.8.xml
+asciidoc -v -d manpage -b docbook %{name}/ca-legacy.8.txt
+xmlto -v -o %{name} man %{name}/ca-legacy.8.xml
 
 
 %install
