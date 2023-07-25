@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2023.2.60
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -404,6 +404,9 @@ fi
 
 
 %changelog
+*Tue Jul 25 2023 Robert Relyea <rrelyea@redhat.com> - 2023.2.60-3
+- Fedora mass rebuild
+
 *Fri Jan 20 2023 Frantisek Krenzelok <krenzelok.frantisek@gmail.com> - 2023.2.60-2
 - Update to CKBI 2.60 from NSS 3.86
 -    Removing:
