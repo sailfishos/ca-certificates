@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2023.2.60
+Version: 2023.2.60_v7.0.306
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 2%{?dist}
 License: Public Domain
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -404,6 +404,73 @@ fi
 
 
 %changelog
+*Tue Aug 01 2023 Robert Relyea <rrelyea@redhat.com> - 2023.2.60_v7.0.306-2
+- Update to CKBI 2.60_v7.0.306 from NSS 3.91
+-    Removing:
+-     # Certificate "OpenTrust Root CA G1"
+-     # Certificate "Swedish Government Root Authority v1"
+-     # Certificate "DigiNotar Root CA G2"
+-     # Certificate "Federal Common Policy CA"
+-     # Certificate "TC TrustCenter Universal CA III"
+-     # Certificate "CCA India 2007"
+-     # Certificate "ipsCA Global CA Root"
+-     # Certificate "ipsCA Main CA Root"
+-     # Certificate "Macao Post eSignTrust Root Certification Authority"
+-     # Certificate "InfoNotary CSP Root"
+-     # Certificate "DigiNotar Root CA"
+-     # Certificate "Root CA"
+-     # Certificate "GPKIRootCA"
+-     # Certificate "D-TRUST Qualified Root CA 1 2007:PN"
+-     # Certificate "TC TrustCenter Universal CA I"
+-     # Certificate "TC TrustCenter Universal CA II"
+-     # Certificate "TC TrustCenter Class 2 CA II"
+-     # Certificate "TC TrustCenter Class 4 CA II"
+-     # Certificate "TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı"
+-     # Certificate "CertRSA01"
+-     # Certificate "KISA RootCA 3"
+-     # Certificate "A-CERT ADVANCED"
+-     # Certificate "A-Trust-Qual-01"
+-     # Certificate "A-Trust-nQual-01"
+-     # Certificate "Serasa Certificate Authority II"
+-     # Certificate "TDC Internet"
+-     # Certificate "America Online Root Certification Authority 2"
+-     # Certificate "RSA Security Inc"
+-     # Certificate "Public Notary Root"
+-     # Certificate "Autoridade Certificadora Raiz Brasileira"
+-     # Certificate "Post.Trust Root CA"
+-     # Certificate "Entrust.net Secure Server Certification Authority"
+-     # Certificate "ePKI EV SSL Certification Authority - G1"
+-    Adding:
+-     # Certificate "BJCA Global Root CA1"
+-     # Certificate "BJCA Global Root CA2"
+-     # Certificate "Symantec Enterprise Mobile Root for Microsoft"
+-     # Certificate "A-Trust-Root-05"
+-     # Certificate "ADOCA02"
+-     # Certificate "StartCom Certification Authority G2"
+-     # Certificate "ATHEX Root CA"
+-     # Certificate "EBG Elektronik Sertifika Hizmet Sağlayıcısı"
+-     # Certificate "GeoTrust Primary Certification Authority"
+-     # Certificate "thawte Primary Root CA"
+-     # Certificate "VeriSign Class 3 Public Primary Certification Authority - G5"
+-     # Certificate "America Online Root Certification Authority 1"
+-     # Certificate "Juur-SK"
+-     # Certificate "ComSign CA"
+-     # Certificate "ComSign Secured CA"
+-     # Certificate "ComSign Advanced Security CA"
+-     # Certificate "Sonera Class2 CA"
+-     # Certificate "VeriSign Class 3 Public Primary Certification Authority - G3"
+-     # Certificate "VeriSign, Inc."
+-     # Certificate "GTE CyberTrust Global Root"
+-     # Certificate "Equifax Secure Global eBusiness CA-1"
+-     # Certificate "Equifax"
+-     # Certificate "Class 1 Primary CA"
+-     # Certificate "Swiss Government Root CA III"
+-     # Certificate "Application CA G4 Root"
+-     # Certificate "SSC GDL CA Root A"
+-     # Certificate "GlobalSign Code Signing Root E45"
+-     # Certificate "GlobalSign Code Signing Root R45"
+-     # Certificate "Entrust Code Signing Root Certification Authority - CSBR1"
+
 *Tue Jul 25 2023 Robert Relyea <rrelyea@redhat.com> - 2023.2.60-3
 - Fedora mass rebuild
 
