@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2023.2.60_v7.0.306
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT AND GPL-2.0-or-later
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -404,6 +404,9 @@ fi
 
 
 %changelog
+* Fri Sep 29 2023 Clemens Lang <cllang@redhat.com> - 2023.2.60_v7.0.306-4
+- update-ca-trust: Support --output and non-root operation (rhbz#2241240)
+
 *Thu Sep 07 2023 Robert Relyea <rrelyea@redhat.com> - 2023.2.60_v7.0.306-3
 - update License: field to SPDX
 
