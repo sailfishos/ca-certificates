@@ -103,7 +103,7 @@ if [ ${skip_signed_obj} -eq 0 ]; then
    if [ -f codesign-release.txt ]; then
       mcs_version=$(cat codesign-release.txt)
       if [[ $ms_version != "unknown" ]]; then
-          ckbi_version="${ckbi_version}-${mcs_version}"
+          ckbi_version="${ckbi_version}_${mcs_version}"
       fi
       signobjects="and Microsoft Signed Objects version $ms_version"
    fi

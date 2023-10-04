@@ -35,7 +35,7 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2023.2.62-v7.0.401
+Version: 2023.2.62_v7.0.401
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
 Release: 2%{?dist}
@@ -404,8 +404,8 @@ fi
 
 
 %changelog
-*Wed Oct 04 2023 Robert Relyea <rrelyea@redhat.com> 2023.2.62-v7.0.401-2
- - Update to CKBI 2.62-v7.0.401 from NSS 3.93
+*Wed Oct 04 2023 Robert Relyea <rrelyea@redhat.com> 2023.2.62_v7.0.401-2
+ - Update to CKBI 2.62_v7.0.401 from NSS 3.93
    Removing: 
     # Certificate "Camerfirma Chambers of Commerce Root"
     # Certificate "Hongkong Post Root CA 1"
