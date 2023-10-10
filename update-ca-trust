@@ -35,48 +35,38 @@ usage() {
 extract() {
 	USER_DEST=
 
-	if ! TEMP=$(getopt -o "ho:" --long "help,output:" -n "$0" -- "$@"); then
-		echo >&2 ""
-		usage
-		exit 1
-	fi
-	eval set -- "$TEMP"
-	unset TEMP
+        # can't use getopt here. ca-certificates can't depend on a lot
+        # of other libraries since openssl depends on ca-certificates
+        # just fail when we hand parse
 
-	while true; do
-		case "$1" in
-			"-o"|"--output")
-				USER_DEST=$2
-				shift 2
-				continue
-			;;
-			"--")
-				shift
-				break
-			;;
-			*)
-				usage
-				exit 1
-			;;
-		esac
+        while [ $# -ne 0 ]; do
+	    case "$1" in
+	      "-o"|"--output")
+	          USER_DEST=$2
+		  shift 2
+		  continue
+		  ;;
+		"--")
+		  shift
+		  break
+		  ;;
+		*)
+		  usage
+		  exit 1
+		  ;;
+	    esac
 	done
-	if [ $# -ne 0 ]; then
-		echo >&2 "Error: Unexpected positional arguments:" "$@"
-		echo >&2
-		usage
-		exit
-	fi
 
 	if [ -n "$USER_DEST" ]; then
 		DEST=$USER_DEST
+	        # Attempt to create the directories if they do not exist
+                # yet (rhbz#2241240)
+	        /usr/bin/mkdir -p \
+		    "$DEST"/openssl \
+		    "$DEST"/pem \
+		    "$DEST"/java \
+		    "$DEST"/edk2
 	fi
-
-	# Attempt to create the directories if they do not exist yet (rhbz#2241240)
-	mkdir -p \
-		"$DEST"/openssl \
-		"$DEST"/pem \
-		"$DEST"/java \
-		"$DEST"/edk2
 
 	# OpenSSL PEM bundle that includes trust flags
 	# (BEGIN TRUSTED CERTIFICATE)
@@ -93,7 +83,9 @@ extract() {
 	# p11-kit extract will have made this directory unwritable; when run with
 	# CAP_DAC_OVERRIDE this does not matter, but in container use cases that may
 	# not be the case. See rhbz#2241240.
-	chmod u+w "$DEST/pem/directory-hash"
+	if [ -n "$USER_DEST" ]; then
+	    /usr/bin/chmod u+w "$DEST/pem/directory-hash"
+        fi
 
 	# Debian compatibility: their /etc/ssl/certs has this bundle
 	/usr/bin/ln -s ../tls-ca-bundle.pem "$DEST/pem/directory-hash/ca-certificates.crt"
@@ -102,20 +94,22 @@ extract() {
 	/usr/bin/ln -s ../tls-ca-bundle.pem "$DEST/pem/directory-hash/ca-bundle.crt"
 
 	# Remove write permissions again
-	chmod u-w "$DEST/pem/directory-hash"
+	if [ -n "$USER_DEST" ]; then
+	    /usr/bin/chmod u-w "$DEST/pem/directory-hash"
+        fi
 }
-
-if [ "$#" -lt 1 ]; then
-	set -- extract
+if [ $# -lt 1 ]; then
+    set -- extract
 fi
+
 case "$1" in
 	"extract")
 		shift
-		extract "$@"
+		extract $@
 	;;
 	"--"*|"-"*)
 		# First parameter seems to be an option, assume the command is 'extract'
-		extract "$@"
+		extract $@
 	;;
 	*)
 		echo >&2 "Error: Unknown command: $1"

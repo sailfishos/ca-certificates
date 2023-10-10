@@ -38,7 +38,7 @@ Name: ca-certificates
 Version: 2023.2.62_v7.0.401
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT AND GPL-2.0-or-later
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -319,7 +319,7 @@ fi
 #fi
 # if ln is available, go ahead and run the ca-legacy and update
 # scripts. If not, wait until %posttrans.
-if [ -x %{_bindir}/ln ] && [ -x %{_bindir}/getopt ]; then
+if [ -x %{_bindir}/ln ]; then
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
 fi
@@ -404,6 +404,9 @@ fi
 
 
 %changelog
+* Mon Oct 09 2023 Robert Relyea <rrelyea@redhat.com> 2023.2.62_v7.0.401-4
+- update-ca-trust: Fix bug in update-ca-trust so we don't depened on util-unix
+
 * Sat Oct 07 2023 Adam Williamson <awilliam@redhat.com> - 2023.2.62_v7.0.401-3
 - Skip %post if getopt is missing (recent change made update-ca-trust use it)
 
