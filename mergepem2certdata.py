@@ -30,7 +30,7 @@ import subprocess
 import getopt
 import asn1
 from cryptography import x509
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, serialization
 from datetime import datetime
 from dateutil.parser import parse
 
@@ -118,6 +118,40 @@ def isDistrusted(obj) :
         return False
     return obj['CKA_TRUST_SERVER_AUTH'] == 'CKT_NSS_NOT_TRUSTED' and obj['CKA_TRUST_EMAIL_PROTECTION'] == 'CKT_NSS_NOT_TRUSTED' and obj['CKA_TRUST_CODE_SIGNING'] == 'CKT_NSS_NOT_TRUSTED'
 
+
+def stripQuotes(label) :
+    if label[:1] == "\"" :
+        label=label[1:]
+    if label[-1] == "\"" :
+        label = label[:-1]
+    return label
+
+# another object of the same class has the same label
+def labelExists(objlist, obj) :
+    for iobj in objlist:
+        if obj['CKA_CLASS'] == iobj['CKA_CLASS'] and obj['CKA_LABEL'] == iobj['CKA_LABEL']:
+            return True
+    return False
+
+# add an object, make sure that label is unique
+def addObj(objlist, newObj, specialLabel, drop) :
+    label = stripQuotes(newObj['CKA_LABEL'])
+    count=1
+    if specialLabel != None :
+        count=0
+        label=label+' '+specialLabel
+    # make sure the label is unique
+    while labelExists(objlist, newObj) :
+        if drop :
+            return 'DROPPED'
+        if count != 0 :
+            newObj['CKA_LABEL'] = "\"%s %d\""%(label,count)
+        else :
+            newObj['CKA_LABEL'] = "\"%s\""%label
+        count=count+1
+    objlist.append(obj)
+    return stripQuotes(newObj['CKA_LABEL'])
+
 try:
     opts, args = getopt.getopt(sys.argv[1:],"c:o:p:t:l:x:",)
 except getopt.GetoptError as err:
@@ -146,11 +180,13 @@ for opt, arg in opts:
         dateString = arg
 
 # parse dateString
+print ("datastring=",dateString)
 verifyDate = True
 if dateString.upper() == "NEVER":
    verifyDate = False
 else:
    date = getdate(dateString)
+print ("verifyDate=",verifyDate)
 
 
 # read the pem file
@@ -193,7 +229,7 @@ for line in open(certdata, 'r'):
         # collect all the inline comments in this object
         obj['Comment'] += comment
         comment = ""
-        objects.append(obj)
+        addObj(objects, obj, None, False)
         obj = dict()
         in_obj = False
         continue
@@ -232,14 +268,15 @@ for line in open(certdata, 'r'):
         binval = bytearray()
         continue
     obj[field] = value
+
 if len(list(obj.items())) > 0:
-    objects.append(obj)
+    addObj(objects, obj, None, False)
 
 # strip out expired certificates from certdata.txt
 if verifyDate :
     for obj in objects:
         if obj['CKA_CLASS'] == 'CKO_CERTIFICATE' :
-            cert = x509.load_der_x509_certificate(obj['CKA_VALUE'])
+            cert = x509.load_der_x509_certificate(bytes(obj['CKA_VALUE']))
             if (cert.not_valid_after <= date) :
                 trust_obj = getTrust(objects,obj['CKA_SERIAL_NUMBER'],obj['CKA_ISSUER'])
                 # we don't remove distrusted expired certificates
@@ -265,11 +302,12 @@ for certval in pemcerts:
                 label=cert.subject.get_attributes_for_oid(x509.oid.NameOID.ORGANIZATION_NAME)[0].value
             except:
                 label="Unknown Certificate"
-    if cert.not_valid_after <= date:
-        print("  Skipping code signing cert %s"%label)
-        print("     Expires: %s"%cert.not_valid_after.strftime("%m/%d/%Y"))
-        print("     Prune time %s: "%date.strftime("%m/%d/%Y"))
-        continue
+    if verifyDate :
+        if cert.not_valid_after <= date:
+            print("  Skipping code signing cert %s"%label)
+            print("     Expires: %s"%cert.not_valid_after.strftime("%m/%d/%Y"))
+            print("     Prune time %s: "%date.strftime("%m/%d/%Y"))
+            continue
     certhashsha1 = cert.fingerprint(hashes.SHA1())
     certhashmd5 =  cert.fingerprint(hashes.MD5())
     
@@ -290,6 +328,32 @@ for certval in pemcerts:
         found = True
         print('Updating "'+label+'" with code signing');
         break
+    if  found :
+        continue
+
+    # check for almost duplicates, certs with the same subject and key, but
+    # different values. If they exist, treat them as the same certificate
+    for obj in objects:
+        if obj['CKA_CLASS'] != 'CKO_CERTIFICATE':
+            continue
+        # do they have the same subject?
+        if obj['CKA_SUBJECT'] != cert.subject.public_bytes():
+            continue
+        # do they have the same public key?
+        cert2 = x509.load_der_x509_certificate(bytes(obj['CKA_VALUE']))
+        if cert2.public_key().public_bytes(serialization.Encoding.DER,serialization.PublicFormat.SubjectPublicKeyInfo) != cert.public_key().public_bytes(serialization.Encoding.DER,serialization.PublicFormat.SubjectPublicKeyInfo) :
+            continue
+        #found now update trust record
+        trust_obj = getTrust(objects,obj['CKA_SERIAL_NUMBER'],obj['CKA_ISSUER'])
+        if trust_obj is None :
+            print('Couldn\'t find trust object for "'+obj['CKA_LABEL']);
+            exit
+        trust_obj[trust] = 'CKT_NSS_TRUSTED_DELEGATOR'
+        found = True
+        print('Updating sister certificate "'+obj['CKA_LABEL']+'" with code signing based on Microsoft "'+label+'"');
+        break
+        if found :
+            break
     if  found :
         continue
     # append this certificate
@@ -323,7 +387,9 @@ for certval in pemcerts:
     obj['CKA_NSS_MOZILLA_CA_POLICY'] = 'CK_FALSE'
     obj['CKA_NSS_SERVER_DISTRUST_AFTER'] = 'CK_FALSE'
     obj['CKA_NSS_EMAIL_DISTRUST_AFTER'] = 'CK_FALSE'
-    objects.append(obj)
+    label = addObj(objects, obj, 'CodeSigning', True)
+    if label == 'DROPPED' :
+        continue
 
     # append the trust values
     obj=dict()
@@ -343,7 +409,7 @@ for certval in pemcerts:
        else:
           obj[t] = 'CKT_NSS_MUST_VERIFY_TRUST'
     obj['CKA_TRUST_STEP_UP_APPROVED'] = 'CK_FALSE'
-    objects.append(obj)
+    label = addObj(objects, obj, 'CodeSigning', True)
     print('Adding code signing cert "'+label+'"');
 
 # now dump the results

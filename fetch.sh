@@ -94,6 +94,21 @@ if [ `basename ${cwd}` = rawhide ]; then
 else
     release="1.0"
 fi
+
+
+# fetch the codesigning certs now so we can get
+# the code signing version number
+if [ ${skip_signed_obj} -eq 0 ]; then
+   ./fetch_objsign.sh
+   if [ -f codesign-release.txt ]; then
+      mcs_version=$(cat codesign-release.txt)
+      if [[ $ms_version != "unknown" ]]; then
+          ckbi_version="${ckbi_version}_${mcs_version}"
+      fi
+      signobjects="and Microsoft Signed Objects version $ms_version"
+   fi
+fi
+
 version=${year}.${ckbi_version}
 
 #make sure the the current version is newer than what is already there
@@ -113,13 +128,15 @@ if [ $? -ne 0 ]; then
    exit 1;
 fi
 
+# merge the signing certs into the normal certdata.txt file.
 if [ ${skip_signed_obj} -eq 0 ]; then
-   ./fetch_objsign.sh
+   cp certdata.txt certdata.txt.orig
+   python3 ./mergepem2certdata.py -c "certdata.txt.orig" -p "microsoft_sign_obj_ca.pem" -o "certdata.txt" -t "CKA_TRUST_CODE_SIGNING" -l "Microsoft Code Signing Only Certificate" -x "NEVER"
 fi
 
 # Verify everything is good with the user
 echo -e "Upgrading ${current_version} -> ${version}:"
-echo -e "*${log_date} ${name} <$email> ${version}-${release}\n - Update to CKBI ${ckbi_version} from NSS ${nss_version}"
+echo -e "*${log_date} ${name} <$email> ${version}-${release}\n - Update to CKBI ${ckbi_version} from NSS ${nss_version}${sign_objects}"
 ./check_certs.sh
 echo ""
 

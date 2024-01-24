@@ -27,7 +27,7 @@ certificates and associated trust
 
 SYNOPSIS
 --------
-*update-ca-trust* ['COMMAND']
+*update-ca-trust* [extract] [-o 'DIR'|--output='DIR']
 
 
 DESCRIPTION
@@ -98,13 +98,13 @@ subdirectory in the /etc hierarchy.
 * add it as a new file to directory /etc/pki/ca-trust/source/anchors/
 * run 'update-ca-trust extract'
 
-.*QUICK HELP 2*: If your certificate is in the extended BEGIN TRUSTED file format (which may contain distrust/blacklist trust flags, or trust flags for usages other than TLS) then:
+.*QUICK HELP 2*: If your certificate is in the extended BEGIN TRUSTED file format (which may contain distrust/blocklist trust flags, or trust flags for usages other than TLS) then:
 * add it as a new file to directory /etc/pki/ca-trust/source/
 * run 'update-ca-trust extract'
 
 .In order to offer simplicity and flexibility, the way certificate files are treated depends on the subdirectory they are installed to.
 * simple trust anchors subdirectory: /usr/share/pki/ca-trust-source/anchors/ or /etc/pki/ca-trust/source/anchors/
-* simple blacklist (distrust) subdirectory: /usr/share/pki/ca-trust-source/blacklist/ or /etc/pki/ca-trust/source/blacklist/
+* simple blocklist (distrust) subdirectory: /usr/share/pki/ca-trust-source/blocklist/ or /etc/pki/ca-trust/source/blocklist/
 * extended format directory: /usr/share/pki/ca-trust-source/ or /etc/pki/ca-trust/source/
 
 .In the main directories /usr/share/pki/ca-trust-source/ or /etc/pki/ca-trust/source/ you may install one or multiple files in the following file formats:
@@ -134,7 +134,7 @@ you may install one or multiple certificates in either the DER file
 format or in the PEM (BEGIN/END CERTIFICATE) file format.
 Each certificate will be treated as *trusted* for all purposes.
 
-In the blacklist subdirectories /usr/share/pki/ca-trust-source/blacklist/ or /etc/pki/ca-trust/source/blacklist/
+In the blocklist subdirectories /usr/share/pki/ca-trust-source/blocklist/ or /etc/pki/ca-trust/source/blocklist/
 you may install one or multiple certificates in either the DER file
 format or in the PEM (BEGIN/END CERTIFICATE) file format.
 Each certificate will be treated as *distrusted* for all purposes.
@@ -214,15 +214,23 @@ server authentication.
 
 COMMANDS
 --------
-(absent/empty command)::
-    Same as the *extract* command described below. (However, the command may
-    print fewer warnings, as this command is being run during rpm package 
-    installation, where non-fatal status output is undesired.)
+(absent/empty command)
+~~~~~~~~~~~~~~~~~~~~~~
+Same as the *extract* command described below. (However, the command may print
+fewer warnings, as this command is being run during rpm package installation,
+where non-fatal status output is undesired.)
 
-*extract*::
-    Instruct update-ca-trust to scan the <<sourceconf,SOURCE CONFIGURATION>> and produce 
-    updated versions of the consolidated configuration files stored below
-    the /etc/pki/ca-trust/extracted directory hierarchy.
+extract
+~~~~~~~
+Instruct update-ca-trust to scan the <<sourceconf,SOURCE CONFIGURATION>> and
+produce updated versions of the consolidated configuration files stored below
+the /etc/pki/ca-trust/extracted directory hierarchy.
+
+EXTRACT OPTIONS
+^^^^^^^^^^^^^^^
+*-o DIR*, *--output=DIR*::
+	Write the extracted trust store into the given directory instead of
+	updating /etc/pki/ca-trust/extracted.
 
 FILES
 -----
