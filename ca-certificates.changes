@@ -1,3 +1,6 @@
+* Wed Jan 24 2024 Matti Lehtimäki <matti.lehtimaki@jolla.com> - 2023.2.62_v7.0.401-6
+- Update to latest upstream ca-certificates. Fixes JB#61387
+
 * Wed Oct 13 2021 Rinat Dobrokhotov <r.dobrokhotov@omprussia.ru> - 2021.2.50-3
 - Update to latest upstream ca-certificates. Fixes JB#55911
 

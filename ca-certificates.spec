@@ -35,9 +35,9 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2021.2.50
-Release: 3
-License: Public Domain
+Version: 2023.2.62_v7.0.401
+Release: 6
+License: MIT AND GPLv2+
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
 
@@ -59,6 +59,7 @@ Source15: README.openssl
 Source16: README.pem
 Source17: README.edk2
 Source18: README.src
+Source19: README.etcssl
 Source30: fetch.sh
 Source31: README
 Source32: sources
@@ -76,16 +77,16 @@ Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.23.19
-Requires(post): p11-kit-trust >= 0.23.19
-Requires: p11-kit >= 0.23.19
-Requires: p11-kit-trust >= 0.23.19
+Requires(post): p11-kit >= 0.23
+Requires(post): p11-kit-trust >= 0.23
+Requires: p11-kit >= 0.23
+Requires: p11-kit-trust >= 0.23
 
 #BuildRequires: perl-interpreter
 BuildRequires: python3-base
 BuildRequires: openssl
 #BuildRequires: asciidoc
-#BuildRequires: libxslt
+#BuildRequires: xmlto
 
 %description
 This package contains the set of CA certificates chosen by the
@@ -174,12 +175,12 @@ popd
 
 #manpage
 cp %{SOURCE10} %{name}/update-ca-trust.8.txt
-#asciidoc.py -v -d manpage -b docbook %%{name}/update-ca-trust.8.txt
-#xsltproc --nonet -o %%{name}/update-ca-trust.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %%{name}/update-ca-trust.8.xml
+#asciidoc -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
+#xmlto -v -o %{name} man %{name}/update-ca-trust.8.xml
 
 cp %{SOURCE9} %{name}/ca-legacy.8.txt
-#asciidoc.py -v -d manpage -b docbook %%{name}/ca-legacy.8.txt
-#xsltproc --nonet -o %%{name}/ca-legacy.8 /usr/share/asciidoc/docbook-xsl/manpage.xsl %%{name}/ca-legacy.8.xml
+#asciidoc -v -d manpage -b docbook %{name}/ca-legacy.8.txt
+#xmlto -v -o %{name} man %{name}/ca-legacy.8.xml
 
 
 %install
@@ -189,8 +190,8 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{pkidir}/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/anchors
-mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blacklist
+mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl
@@ -198,8 +199,8 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
-mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
+mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_mandir}/man8
@@ -214,6 +215,7 @@ install -p -m 644 %{SOURCE15} $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl/REA
 install -p -m 644 %{SOURCE16} $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/README
 install -p -m 644 %{SOURCE17} $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/README
 install -p -m 644 %{SOURCE18} $RPM_BUILD_ROOT%{catrustdir}/source/README
+install -p -m 644 %{SOURCE19} $RPM_BUILD_ROOT%{_sysconfdir}/ssl/README
 
 install -p -m 644 %{name}/%{p11_format_bundle} $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/%{p11_format_bundle}
 
@@ -248,8 +250,9 @@ chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 
-# /etc/ssl symlinks for 3rd-party tools and cross-distro compatibility
-ln -s /etc/pki/tls/certs \
+# /etc/ssl is provided in a Debian compatible form for (bad) code that
+# expects it: https://bugzilla.redhat.com/show_bug.cgi?id=1053882
+ln -s %{catrustdir}/extracted/pem/directory-hash \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/cert.pem
@@ -348,8 +351,8 @@ fi
 %dir %{catrustdir}
 %dir %{catrustdir}/source
 %dir %{catrustdir}/source/anchors
-%dir %{catrustdir}/source/blocklist
 %dir %{catrustdir}/source/blacklist
+%dir %{catrustdir}/source/blocklist
 %dir %{catrustdir}/extracted
 %dir %{catrustdir}/extracted/pem
 %dir %{catrustdir}/extracted/openssl
@@ -357,8 +360,8 @@ fi
 %dir %{_datadir}/pki
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
-%dir %{_datadir}/pki/ca-trust-source/blocklist
 %dir %{_datadir}/pki/ca-trust-source/blacklist
+%dir %{_datadir}/pki/ca-trust-source/blocklist
 %dir %{_datadir}/pki/ca-trust-legacy
 
 %config(noreplace) %{catrustdir}/ca-legacy.conf
@@ -379,8 +382,10 @@ fi
 %{pkidir}/tls/certs/%{classic_tls_bundle}
 %{pkidir}/tls/certs/%{openssl_format_trust_bundle}
 %{pkidir}/%{java_bundle}
-# symlinks to cross-distro compatibility files and directory
+# Hybrid hash directory with bundle file for Debian compatibility
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1053882
 %{_sysconfdir}/ssl/certs
+%{_sysconfdir}/ssl/README
 %{_sysconfdir}/ssl/cert.pem
 %{_sysconfdir}/ssl/openssl.cnf
 %{_sysconfdir}/ssl/ct_log_list.cnf
