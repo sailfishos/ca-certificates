@@ -82,8 +82,8 @@ Requires(post): p11-kit-trust >= 0.23
 Requires: p11-kit >= 0.23
 Requires: p11-kit-trust >= 0.23
 
-#BuildRequires: perl-interpreter
-BuildRequires: python3-base
+BuildRequires: perl-interpreter
+BuildRequires: python3
 BuildRequires: openssl
 #BuildRequires: asciidoc
 #BuildRequires: xmlto
