@@ -42,31 +42,31 @@ License: MIT AND GPLv2+
 URL: https://fedoraproject.org/wiki/CA-Certificates
 
 #Please always update both certdata.txt and nssckbi.h
-Source0: certdata.txt
-Source1: nssckbi.h
-Source2: update-ca-trust
-Source3: trust-fixes
-Source4: certdata2pem.py
-Source5: ca-legacy.conf
-Source6: ca-legacy
-Source9: ca-legacy.8.txt
-Source10: update-ca-trust.8.txt
-Source11: README.usr
-Source12: README.etc
-Source13: README.extr
-Source14: README.java
-Source15: README.openssl
-Source16: README.pem
-Source17: README.edk2
-Source18: README.src
-Source19: README.etcssl
-Source30: fetch.sh
-Source31: README
-Source32: sources
-Source33: sort-blocks.py
-Source34: check_certs.sh
-Source35: fetch_objsign.sh
-Source36: mergepem2certdata.py
+Source0: https://github.com/sailfishos/ca-certificates/raw/master/certdata.txt
+Source1: https://github.com/sailfishos/ca-certificates/raw/master/nssckbi.h
+Source2: https://github.com/sailfishos/ca-certificates/raw/master/update-ca-trust
+Source3: https://github.com/sailfishos/ca-certificates/raw/master/trust-fixes
+Source4: https://github.com/sailfishos/ca-certificates/raw/master/certdata2pem.py
+Source5: https://github.com/sailfishos/ca-certificates/raw/master/ca-legacy.conf
+Source6: https://github.com/sailfishos/ca-certificates/raw/master/ca-legacy
+Source9: https://github.com/sailfishos/ca-certificates/raw/master/ca-legacy.8.txt
+Source10: https://github.com/sailfishos/ca-certificates/raw/master/update-ca-trust.8.txt
+Source11: https://github.com/sailfishos/ca-certificates/raw/master/README.usr
+Source12: https://github.com/sailfishos/ca-certificates/raw/master/README.etc
+Source13: https://github.com/sailfishos/ca-certificates/raw/master/README.extr
+Source14: https://github.com/sailfishos/ca-certificates/raw/master/README.java
+Source15: https://github.com/sailfishos/ca-certificates/raw/master/README.openssl
+Source16: https://github.com/sailfishos/ca-certificates/raw/master/README.pem
+Source17: https://github.com/sailfishos/ca-certificates/raw/master/README.edk2
+Source18: https://github.com/sailfishos/ca-certificates/raw/master/README.src
+Source19: https://github.com/sailfishos/ca-certificates/raw/master/README.etcssl
+Source30: https://github.com/sailfishos/ca-certificates/raw/master/fetch.sh
+Source31: https://github.com/sailfishos/ca-certificates/raw/master/README
+Source32: https://github.com/sailfishos/ca-certificates/raw/master/sources
+Source33: https://github.com/sailfishos/ca-certificates/raw/master/sort-blocks.py
+Source34: https://github.com/sailfishos/ca-certificates/raw/master/check_certs.sh
+Source35: https://github.com/sailfishos/ca-certificates/raw/master/fetch_objsign.sh
+Source36: https://github.com/sailfishos/ca-certificates/raw/master/mergepem2certdata.py
 
 BuildArch: noarch
 
