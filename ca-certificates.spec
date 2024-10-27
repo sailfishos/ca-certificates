@@ -104,7 +104,7 @@ mkdir %{name}/java
 pushd %{name}/certs
  pwd
  cp %{SOURCE0} .
- python3 %{SOURCE4} >c2p.log 2>c2p.err
+ python3 %{SOURCE4}
 popd
 pushd %{name}
  (
