@@ -290,7 +290,8 @@ find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type l \
      -regextype posix-extended -regex '.*/[0-9a-f]{8}\.[0-9]+' \
      -exec cp -P {} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ \;
 # Create a temporary file with the list of (%ghost )files in the directory-hash and their copies
-find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type f,l > .files.txt
+find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type f > .files.txt
+find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type l >> .files.txt
 find $RPM_BUILD_ROOT%{pkidir}/tls/certs -type l -regextype posix-extended \
      -regex '.*/[0-9a-f]{8}\.[0-9]+' >> .files.txt
 
@@ -315,7 +316,7 @@ ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
 
 %clean
-/usr/bin/chmod u+w $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash
+/usr/bin/chmod -R u+w $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash
 rm -rf $RPM_BUILD_ROOT
 
 %pre
