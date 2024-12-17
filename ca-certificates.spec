@@ -37,7 +37,7 @@ Name: ca-certificates
 Version: 2024.2.69_v8.0.401
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT AND GPL-2.0-or-later
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -308,6 +308,8 @@ ln -s %{catrustdir}/extracted/%{java_bundle} \
     $RPM_BUILD_ROOT%{pkidir}/%{java_bundle}
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+    $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-certificates.crt
 
 %clean
 /usr/bin/chmod u+w $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash
@@ -414,6 +416,7 @@ fi
 # symlinks for old locations
 %{pkidir}/tls/cert.pem
 %{pkidir}/tls/certs/%{classic_tls_bundle}
+%{pkidir}/tls/certs/ca-certificates.crt
 %{pkidir}/%{java_bundle}
 # Hybrid hash directory with bundle file for Debian compatibility
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1053882
@@ -440,6 +443,9 @@ fi
 %ghost %{catrustdir}/extracted/edk2/cacerts.bin
 
 %changelog
+*Tue Dec 17 2024 Frantisek Krenzelok <fkrenzel@redhat.com> - 2024.2.69_v8.0.401-4
+- Bring back /etc/pki/tls/certs/ca-certificates.crt
+
 *Fri Sep 27 2024 Frantisek Krenzelok <fkrenzel@redhat.com> - 2024.2.69_v8.0.401-3
 - Bring back /etc/pki/tls/cert.pem
 
