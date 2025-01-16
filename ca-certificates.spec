@@ -37,7 +37,7 @@ Name: ca-certificates
 Version: 2024.2.69_v8.0.401
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: MIT AND GPL-2.0-or-later
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -443,6 +443,9 @@ fi
 %ghost %{catrustdir}/extracted/edk2/cacerts.bin
 
 %changelog
+* Thu Jan 16 2025 Fedora Release Engineering <releng@fedoraproject.org> - 2024.2.69_v8.0.401-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
 *Tue Dec 17 2024 Frantisek Krenzelok <fkrenzel@redhat.com> - 2024.2.69_v8.0.401-4
 - Bring back /etc/pki/tls/certs/ca-certificates.crt
 
