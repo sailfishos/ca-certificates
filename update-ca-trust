@@ -84,6 +84,7 @@ extract() {
 
 	# OpenSSL PEM bundle that includes trust flags
 	# (BEGIN TRUSTED CERTIFICATE)
+	/usr/bin/trust extract --format=openssl-bundle --filter=certificates --overwrite --comment "$DEST/openssl/ca-bundle.trust.crt"
 	/usr/bin/trust extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose server-auth "$DEST/pem/tls-ca-bundle.pem"
 	/usr/bin/trust extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose email "$DEST/pem/email-ca-bundle.pem"
 	/usr/bin/trust extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose code-signing "$DEST/pem/objsign-ca-bundle.pem"
