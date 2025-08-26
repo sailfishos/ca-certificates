@@ -35,10 +35,10 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2024.2.69_v8.0.401
+Version: 2025.2.80_v9.0.304
 # for Rawhide, please always use release >= 2
 # for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 6%{?dist}
+Release: 1.0%{?dist}
 License: MIT AND GPL-2.0-or-later
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -458,6 +458,23 @@ fi
 %ghost %{catrustdir}/extracted/edk2/cacerts.bin
 
 %changelog
+*Tue Aug 26 2025 rhel-developer-toolbox <krenzelok.frantisek@gmail.com> - 2025.2.80_v9.0.304-1.0
+- Update to CKBI 2.80_v9.0.304 from NSS 3.114
+-    Adding:
+-     # Certificate "TWCA CYBER Root CA"
+-     # Certificate "TWCA Global Root CA G2"
+-     # Certificate "SecureSign Root CA12"
+-     # Certificate "SecureSign Root CA14"
+-     # Certificate "SecureSign Root CA15"
+-     # Certificate "D-TRUST BR Root CA 2 2023"
+-     # Certificate "TrustAsia SMIME ECC Root CA"
+-     # Certificate "TrustAsia SMIME RSA Root CA"
+-     # Certificate "TrustAsia TLS ECC Root CA"
+-     # Certificate "TrustAsia TLS RSA Root CA"
+-     # Certificate "D-TRUST EV Root CA 2 2023"
+-     # Certificate "SwissSign RSA SMIME Root CA 2022 - 1"
+-     # Certificate "SwissSign RSA TLS Root CA 2022 - 1"
+
 *Mon Apr 14 2025 Frantisek Krenzelok <fkrenzel@redhat.com> - 2024.2.69_v8.0.401-6
 - Bring back /etc/pki/tls/certs/ca-bundle.trust.crt
 
