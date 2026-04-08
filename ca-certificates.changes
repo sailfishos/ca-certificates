@@ -1,3 +1,6 @@
+* Wed Apr 08 2026 Matti Viljanen <matti.viljanen@jolla.com> - 2025.2.80_v9.0.304-1
+- Update to latest upstream ca-certificates (f42). Fixes JB#61387
+
 * Wed Jan 24 2024 Matti Lehtimäki <matti.lehtimaki@jolla.com> - 2023.2.62_v7.0.401-6
 - Update to latest upstream ca-certificates. Fixes JB#61387
 
@@ -29,14 +32,14 @@
 - Update certificates to 2012.87 (from Fedora git).
 - Update of blacklist.txt from Fedora git.
 
-* Fri Sep 24 2012 Islam Amer <islam.amer@jollamobile.com> - 2012.81
+* Mon Sep 24 2012 Islam Amer <islam.amer@jollamobile.com> - 2012.81
 - Specifiy multi_c_rehash Requires more precisely to be only in post and postun
   to fix image building.
 
 * Fri Sep 21 2012 Islam Amer <islam.amer@jollamobile.com> - 2012.81
 - Use multi_c_rehash to make the certificate bundle usable. Fixes MER#488
 
-* Mon Apr 06 2012 Marko Saukko <sage@merproject.org> - 2012.81
+* Fri Apr 06 2012 Marko Saukko <sage@merproject.org> - 2012.81
 - Added build dependency to openssl which is required after for 
   the next openssl packaging update.
 - Updated to the latest version from Fedora.

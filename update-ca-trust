@@ -8,6 +8,7 @@ set -eu
 # files in $DEST.
 
 DEST=/etc/pki/ca-trust/extracted
+DEST_CERTS=/etc/pki/tls/certs
 
 # Prevent p11-kit from reading user configuration files.
 export P11_KIT_NO_USER_CONFIG=1
@@ -19,7 +20,7 @@ usage() {
 		Update the system trust store in $DEST.
 
 		COMMANDS
-		(absent/empty command): Same as the extract command described below.
+		(absent/empty command): Same as the extract command without arguments.
 
 		extract: Instruct update-ca-trust to scan the source configuration in
 		/usr/share/pki/ca-trust-source and /etc/pki/ca-trust/source and produce
@@ -28,7 +29,8 @@ usage() {
 
 		EXTRACT OPTIONS
 		-o DIR, --output=DIR: Write the extracted trust store into the given
-		directory instead of updating $DEST.
+		directory instead of updating $DEST. (Note: This option will not
+		populate the ../pki/tls/certs with the directory-hash symbolic links.)
 	EOF
 }
 
@@ -42,6 +44,11 @@ extract() {
         while [ $# -ne 0 ]; do
 	    case "$1" in
 	      "-o"|"--output")
+		  if [ $# -lt 2 ]; then
+			  echo >&2 "Error: missing argument for '$1' option. See 'update-ca-trust --help' for usage."
+			  echo >&2
+			  exit 1
+		  fi
 	          USER_DEST=$2
 		  shift 2
 		  continue
@@ -51,7 +58,7 @@ extract() {
 		  break
 		  ;;
 		*)
-		  usage
+		  echo >&2 "Error: unknown extract argument '$1'. See 'update-ca-trust --help' for usage."
 		  exit 1
 		  ;;
 	    esac
@@ -68,17 +75,24 @@ extract() {
 		    "$DEST"/edk2
 	fi
 
+
+	# Delete all directory hash symlinks from the cert directory
+	if [ -z "$USER_DEST" ]; then
+		find "$DEST_CERTS" -type l \
+		     -regex '.*/[0-9a-f]{8}\.[0-9]+' -exec rm -f {} \;
+	fi
+
 	# OpenSSL PEM bundle that includes trust flags
 	# (BEGIN TRUSTED CERTIFICATE)
-	/usr/bin/p11-kit extract --format=openssl-bundle --filter=certificates --overwrite --comment "$DEST/openssl/ca-bundle.trust.crt"
-	/usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose server-auth "$DEST/pem/tls-ca-bundle.pem"
-	/usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose email "$DEST/pem/email-ca-bundle.pem"
-	/usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose code-signing "$DEST/pem/objsign-ca-bundle.pem"
-	/usr/bin/p11-kit extract --format=java-cacerts --filter=ca-anchors --overwrite --purpose server-auth "$DEST/java/cacerts"
-	/usr/bin/p11-kit extract --format=edk2-cacerts --filter=ca-anchors --overwrite --purpose=server-auth "$DEST/edk2/cacerts.bin"
+	/usr/bin/trust extract --format=openssl-bundle --filter=certificates --overwrite --comment "$DEST/openssl/ca-bundle.trust.crt"
+	/usr/bin/trust extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose server-auth "$DEST/pem/tls-ca-bundle.pem"
+	/usr/bin/trust extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose email "$DEST/pem/email-ca-bundle.pem"
+	/usr/bin/trust extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose code-signing "$DEST/pem/objsign-ca-bundle.pem"
+	/usr/bin/trust extract --format=java-cacerts --filter=ca-anchors --overwrite --purpose server-auth "$DEST/java/cacerts"
+	/usr/bin/trust extract --format=edk2-cacerts --filter=ca-anchors --overwrite --purpose=server-auth "$DEST/edk2/cacerts.bin"
 	# Hashed directory of BEGIN TRUSTED-style certs (usable as OpenSSL CApath and
 	# by GnuTLS)
-	/usr/bin/p11-kit extract --format=pem-directory-hash --filter=ca-anchors --overwrite --purpose server-auth "$DEST/pem/directory-hash"
+	/usr/bin/trust extract --format=pem-directory-hash --filter=ca-anchors --overwrite --purpose server-auth "$DEST/pem/directory-hash"
 
 	# p11-kit extract will have made this directory unwritable; when run with
 	# CAP_DAC_OVERRIDE this does not matter, but in container use cases that may
@@ -97,6 +111,15 @@ extract() {
 	if [ -n "$USER_DEST" ]; then
 	    /usr/bin/chmod u-w "$DEST/pem/directory-hash"
         fi
+
+	if [ -z "$USER_DEST" ]; then
+		find "$DEST/pem/directory-hash" -type l \
+		     -regex '.*/[0-9a-f]{8}\.[0-9]+' | while read link; do
+			target=$(readlink -f "$link")
+			new_link="$DEST_CERTS/$(basename "$link")"
+			ln -s "$target" "$new_link"
+		done
+	fi
 }
 if [ $# -lt 1 ]; then
     set -- extract
@@ -105,16 +128,14 @@ fi
 case "$1" in
 	"extract")
 		shift
-		extract $@
+		extract "$@"
 	;;
-	"--"*|"-"*)
-		# First parameter seems to be an option, assume the command is 'extract'
-		extract $@
+	"--help")
+		usage
+		exit 0
 	;;
 	*)
-		echo >&2 "Error: Unknown command: $1"
-		echo >&2
-		usage
+		echo >&2 "Error: unknown command: '$1', see 'update-ca-trust --help' for usage."
 		exit 1
 	;;
 esac

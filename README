@@ -4,5 +4,5 @@ The repository:
     https://src.fedoraproject.org/rpms/ca-certificates.git
 
 is considered to be the upstream for this package, and changes to it should
-be marked with '[mer]'. To update, simply merge from that remote.
+be marked with '[ca-certificates]'. To update, simply merge from that remote.
 
