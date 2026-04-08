@@ -78,7 +78,7 @@ extract() {
 
 	# Delete all directory hash symlinks from the cert directory
 	if [ -z "$USER_DEST" ]; then
-		find "$DEST_CERTS" -type l -regextype posix-extended \
+		find "$DEST_CERTS" -type l \
 		     -regex '.*/[0-9a-f]{8}\.[0-9]+' -exec rm -f {} \;
 	fi
 
@@ -94,9 +94,26 @@ extract() {
 	# by GnuTLS)
 	/usr/bin/trust extract --format=pem-directory-hash --filter=ca-anchors --overwrite --purpose server-auth "$DEST/pem/directory-hash"
 
+	# p11-kit extract will have made this directory unwritable; when run with
+	# CAP_DAC_OVERRIDE this does not matter, but in container use cases that may
+	# not be the case. See rhbz#2241240.
+	if [ -n "$USER_DEST" ]; then
+	    /usr/bin/chmod u+w "$DEST/pem/directory-hash"
+        fi
+
+	# Debian compatibility: their /etc/ssl/certs has this bundle
+	/usr/bin/ln -s ../tls-ca-bundle.pem "$DEST/pem/directory-hash/ca-certificates.crt"
+	# Backwards compatibility: RHEL/Fedora provided a /etc/ssl/certs/ca-bundle.crt
+	# since https://bugzilla.redhat.com/show_bug.cgi?id=572725
+	/usr/bin/ln -s ../tls-ca-bundle.pem "$DEST/pem/directory-hash/ca-bundle.crt"
+
+	# Remove write permissions again
+	if [ -n "$USER_DEST" ]; then
+	    /usr/bin/chmod u-w "$DEST/pem/directory-hash"
+        fi
 
 	if [ -z "$USER_DEST" ]; then
-		find "$DEST/pem/directory-hash" -type l -regextype posix-extended \
+		find "$DEST/pem/directory-hash" -type l \
 		     -regex '.*/[0-9a-f]{8}\.[0-9]+' | while read link; do
 			target=$(readlink -f "$link")
 			new_link="$DEST_CERTS/$(basename "$link")"

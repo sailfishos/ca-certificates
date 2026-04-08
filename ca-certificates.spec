@@ -36,12 +36,11 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2025.2.80_v9.0.304
-# for Rawhide, please always use release >= 2
-# for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
-Release: 1.0%{?dist}
-License: MIT AND GPL-2.0-or-later
+Release: 1
+License: MIT AND GPLv2+
 
-URL: https://fedoraproject.org/wiki/CA-Certificates
+# Upstream URL: https://fedoraproject.org/wiki/CA-Certificates
+URL: https://github.com/sailfishos/ca-certificates
 
 #Please always update both certdata.txt and nssckbi.h
 Source0: certdata.txt
@@ -180,12 +179,12 @@ popd
 
 #manpage
 cp %{SOURCE10} %{name}/update-ca-trust.8.txt
-#asciidoc -v -d manpage -b docbook %{name}/update-ca-trust.8.txt
-#xmlto -v -o %{name} man %{name}/update-ca-trust.8.xml
+#asciidoc -v -d manpage -b docbook %%{name}/update-ca-trust.8.txt
+#xmlto -v -o %%{name} man %%{name}/update-ca-trust.8.xml
 
 cp %{SOURCE9} %{name}/ca-legacy.8.txt
-#asciidoc -v -d manpage -b docbook %{name}/ca-legacy.8.txt
-#xmlto -v -o %{name} man %{name}/ca-legacy.8.xml
+#asciidoc -v -d manpage -b docbook %%{name}/ca-legacy.8.txt
+#xmlto -v -o %%{name} man %%{name}/ca-legacy.8.xml
 
 
 %install
@@ -292,18 +291,18 @@ trust extract --format=pem-directory-hash --filter=ca-anchors --overwrite \
 rm -f "$trust_module_config"
 
 find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type l \
-     -regextype posix-extended -regex '.*/[0-9a-f]{8}\.[0-9]+' \
+     -regex '.*/[0-9a-f]{8}\.[0-9]+' \
      -exec cp -P {} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ \;
-# Create a temporary file with the list of (%ghost )files in the directory-hash and their copies
-find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type f,l > .files.txt
-find $RPM_BUILD_ROOT%{pkidir}/tls/certs -type l -regextype posix-extended \
+# Create a temporary file with the list of (%%ghost )files in the directory-hash and their copies
+find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash  \( -type f -o -type l \) > .files.txt
+find $RPM_BUILD_ROOT%{pkidir}/tls/certs -type l \
      -regex '.*/[0-9a-f]{8}\.[0-9]+' >> .files.txt
 
 sed -i "s|^$RPM_BUILD_ROOT|%ghost /|" .files.txt
 
 # /etc/ssl is provided in a Debian compatible form for (bad) code that
 # expects it: https://bugzilla.redhat.com/show_bug.cgi?id=1053882
-ln -s %{pkidir}/tls/certs \
+ln -s %{catrustdir}/extracted/pem/directory-hash \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/cert.pem
@@ -379,7 +378,7 @@ fi
 #  # when upgrading or downgrading
 #fi
 # if ln is available, go ahead and run the ca-legacy and update
-# scripts. If not, wait until %posttrans.
+# scripts. If not, wait until %%posttrans.
 if [ -x %{_bindir}/ln ]; then
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
@@ -399,7 +398,7 @@ fi
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
 
-# The file .files.txt contains the list of (%ghost )files in the directory-hash
+# The file .files.txt contains the list of (%%ghost )files in the directory-hash
 %files -f .files.txt
 %dir %{_sysconfdir}/ssl
 %dir %{pkidir}/tls
