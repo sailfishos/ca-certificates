@@ -35,9 +35,11 @@ Name: ca-certificates
 # to have increasing version numbers. However, the new scheme will work, 
 # because all future versions will start with 2013 or larger.)
 
-Version: 2023.2.62_v7.0.401
-Release: 6
-License: MIT AND GPLv2+
+Version: 2025.2.80_v9.0.304
+# for Rawhide, please always use release >= 2
+# for Fedora release branches, please use release < 2 (1.0, 1.1, ...)
+Release: 1.0%{?dist}
+License: MIT AND GPL-2.0-or-later
 
 URL: https://fedoraproject.org/wiki/CA-Certificates
 
@@ -71,16 +73,19 @@ Source36: mergepem2certdata.py
 BuildArch: noarch
 
 Requires(post): bash
+Requires(post): findutils
 Requires(post): grep
 Requires(post): sed
 Requires(post): coreutils
 Requires: bash
 Requires: grep
 Requires: sed
-Requires(post): p11-kit >= 0.23
-Requires(post): p11-kit-trust >= 0.23
-Requires: p11-kit >= 0.23
-Requires: p11-kit-trust >= 0.23
+Requires(post): p11-kit >= 0.24
+Requires(post): p11-kit-trust >= 0.24
+Requires: p11-kit >= 0.24
+Requires: p11-kit-trust >= 0.24
+Requires: libffi
+Requires(post): libffi
 
 #BuildRequires: perl-interpreter
 BuildRequires: python3-base
@@ -190,16 +195,15 @@ mkdir -p -m 755 $RPM_BUILD_ROOT%{pkidir}/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_sysconfdir}/ssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/anchors
-mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem
+mkdir -p -m 555 $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/openssl
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/java
 mkdir -p -m 755 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/anchors
-mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blacklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source/blocklist
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-legacy
 mkdir -p -m 755 $RPM_BUILD_ROOT%{_bindir}
@@ -250,9 +254,56 @@ chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/%{java_bundle}
 touch $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 chmod 444 $RPM_BUILD_ROOT%{catrustdir}/extracted/edk2/cacerts.bin
 
+# Populate %%{catrustdir}/extracted/pem/directory-hash.
+#
+# First direct p11-kit-trust.so to the generated bundle (not the one
+# already present on the build system) with an overriding module
+# config. Note that we have to use a different config path based on
+# the current user: if root, ~/.config/pkcs11/modules/* are not read,
+# while if a regular user, she can't write to /etc.
+if test "$(id -u)" -eq 0; then
+   trust_module_dir=/etc/pkcs11/modules
+else
+   trust_module_dir=$HOME/.config/pkcs11/modules
+fi
+
+mkdir -p "$trust_module_dir"
+
+# It is unlikely that the directory would contain any files on a build system,
+# but let's make sure just in case.
+if [ -n "$(ls -A "$trust_module_dir")" ]; then
+        echo "Directory $trust_module_dir is not empty. Aborting build!"
+        exit 1
+fi
+
+trust_module_config=$trust_module_dir/%{name}-p11-kit-trust.module
+cat >"$trust_module_config" <<EOF
+module: p11-kit-trust.so
+trust-policy: yes
+x-init-reserved: paths='$RPM_BUILD_ROOT%{_datadir}/pki/ca-trust-source'
+EOF
+
+# Extract the trust anchors to the directory-hash format.
+trust extract --format=pem-directory-hash --filter=ca-anchors --overwrite \
+              --purpose server-auth \
+              $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash
+
+# Clean up the temporary module config.
+rm -f "$trust_module_config"
+
+find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type l \
+     -regextype posix-extended -regex '.*/[0-9a-f]{8}\.[0-9]+' \
+     -exec cp -P {} $RPM_BUILD_ROOT%{pkidir}/tls/certs/ \;
+# Create a temporary file with the list of (%ghost )files in the directory-hash and their copies
+find $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash -type f,l > .files.txt
+find $RPM_BUILD_ROOT%{pkidir}/tls/certs -type l -regextype posix-extended \
+     -regex '.*/[0-9a-f]{8}\.[0-9]+' >> .files.txt
+
+sed -i "s|^$RPM_BUILD_ROOT|%ghost /|" .files.txt
+
 # /etc/ssl is provided in a Debian compatible form for (bad) code that
 # expects it: https://bugzilla.redhat.com/show_bug.cgi?id=1053882
-ln -s %{catrustdir}/extracted/pem/directory-hash \
+ln -s %{pkidir}/tls/certs \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/certs
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{_sysconfdir}/ssl/cert.pem
@@ -263,13 +314,18 @@ ln -s /etc/pki/tls/ct_log_list.cnf \
 # legacy filenames
 ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
     $RPM_BUILD_ROOT%{pkidir}/tls/cert.pem
-ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
-    $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
-ln -s %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle} \
-    $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{openssl_format_trust_bundle}
 ln -s %{catrustdir}/extracted/%{java_bundle} \
     $RPM_BUILD_ROOT%{pkidir}/%{java_bundle}
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+    $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{classic_tls_bundle}
+ln -s %{catrustdir}/extracted/pem/tls-ca-bundle.pem \
+    $RPM_BUILD_ROOT%{pkidir}/tls/certs/ca-certificates.crt
+ln -s %{catrustdir}/extracted/openssl/%{openssl_format_trust_bundle} \
+    $RPM_BUILD_ROOT%{pkidir}/tls/certs/%{openssl_format_trust_bundle}
 
+%clean
+/usr/bin/chmod u+w $RPM_BUILD_ROOT%{catrustdir}/extracted/pem/directory-hash
+rm -rf $RPM_BUILD_ROOT
 
 %pre
 if [ $1 -gt 1 ] ; then
@@ -343,7 +399,8 @@ fi
 %{_bindir}/ca-legacy install
 %{_bindir}/update-ca-trust
 
-%files
+# The file .files.txt contains the list of (%ghost )files in the directory-hash
+%files -f .files.txt
 %dir %{_sysconfdir}/ssl
 %dir %{pkidir}/tls
 %dir %{pkidir}/tls/certs
@@ -351,7 +408,6 @@ fi
 %dir %{catrustdir}
 %dir %{catrustdir}/source
 %dir %{catrustdir}/source/anchors
-%dir %{catrustdir}/source/blacklist
 %dir %{catrustdir}/source/blocklist
 %dir %{catrustdir}/extracted
 %dir %{catrustdir}/extracted/pem
@@ -360,9 +416,9 @@ fi
 %dir %{_datadir}/pki
 %dir %{_datadir}/pki/ca-trust-source
 %dir %{_datadir}/pki/ca-trust-source/anchors
-%dir %{_datadir}/pki/ca-trust-source/blacklist
 %dir %{_datadir}/pki/ca-trust-source/blocklist
 %dir %{_datadir}/pki/ca-trust-legacy
+%dir %{catrustdir}/extracted/pem/directory-hash
 
 %config(noreplace) %{catrustdir}/ca-legacy.conf
 
@@ -380,6 +436,7 @@ fi
 # symlinks for old locations
 %{pkidir}/tls/cert.pem
 %{pkidir}/tls/certs/%{classic_tls_bundle}
+%{pkidir}/tls/certs/ca-certificates.crt
 %{pkidir}/tls/certs/%{openssl_format_trust_bundle}
 %{pkidir}/%{java_bundle}
 # Hybrid hash directory with bundle file for Debian compatibility
