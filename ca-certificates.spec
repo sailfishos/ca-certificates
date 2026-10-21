@@ -36,7 +36,7 @@ Name: ca-certificates
 # because all future versions will start with 2013 or larger.)
 
 Version: 2025.2.80_v9.0.304
-Release: 1
+Release: 2
 License: MIT AND GPLv2+
 
 # Upstream URL: https://fedoraproject.org/wiki/CA-Certificates
@@ -68,6 +68,9 @@ Source33: sort-blocks.py
 Source34: check_certs.sh
 Source35: fetch_objsign.sh
 Source36: mergepem2certdata.py
+
+Patch0: remove-aaa-certificate-services.patch
+Patch1: remove-emsign-ecc-root-ca-g3.patch
 
 BuildArch: noarch
 
@@ -103,11 +106,13 @@ mkdir %{name}/certs
 mkdir %{name}/certs/legacy-default
 mkdir %{name}/certs/legacy-disable
 mkdir %{name}/java
+cp %{SOURCE0} %{name}/certs/certdata.txt
+%patch -P 0 -p0 -d %{name}/certs
+%patch -P 1 -p0 -d %{name}/certs
 
 %build
 pushd %{name}/certs
  pwd
- cp %{SOURCE0} .
  python3 %{SOURCE4} >c2p.log 2>c2p.err
 popd
 pushd %{name}
